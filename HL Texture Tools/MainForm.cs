@@ -141,6 +141,12 @@ namespace HLTextureTools
 
         private void ReloadCurrentImage()
         {
+            //Do not reload image If current is empty
+            if (string.IsNullOrEmpty(lastFilename))
+            {
+                return;
+            }
+
             panel1.AutoScrollPosition = Point.Empty;
             toolStripButton2.Enabled = false;
             ChangeTransparentColorMode(false);
