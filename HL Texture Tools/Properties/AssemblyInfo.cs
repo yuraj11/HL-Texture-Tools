@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Half-Life Texture Tools")]
-[assembly: AssemblyCopyright("Copyright © 2006-2012 Juraj Novák (Yuraj)")]
+[assembly: AssemblyCopyright("Copyright © 2006-2014 Juraj Novák (Yuraj)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
