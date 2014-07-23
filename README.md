@@ -11,10 +11,12 @@ You will need .net framework 3.5+ to run this application.
 
 Current version: **1.5.5 Beta** ([changelog](CHANGELOG.md))
 
-###TODO:
+###TODO
 - autoresize images when creating new wad
 - editing WAD/SPR files (adding images to opened wad/spr)
 - loading detail textures (e.g. SC mod)
 - tga support?
+
+*Copy FreeImage.dll and FreeImageNET.dll from FreeImage directory while debugging or releasing into debug/release directory.*
 
 ![screenshot](http://yuraj.ucoz.com/HLTextureTools_15.png)
