@@ -17,6 +17,8 @@ Current version: **1.5.5 Beta** ([changelog](CHANGELOG.md))
 - loading detail textures (e.g. SC mod)
 - tga support?
 
+** I am waiting for contributors :-) ! **
+
 *Copy FreeImage.dll and FreeImageNET.dll from FreeImage directory while debugging or releasing into debug/release directory.*
 
 [SC Forums thread](http://forums.svencoop.com/showthread.php/38661-HL-Texture-Tools)
