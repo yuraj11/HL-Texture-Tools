@@ -19,4 +19,6 @@ Current version: **1.5.5 Beta** ([changelog](CHANGELOG.md))
 
 *Copy FreeImage.dll and FreeImageNET.dll from FreeImage directory while debugging or releasing into debug/release directory.*
 
+[SC Forums thread](http://forums.svencoop.com/showthread.php/38661-HL-Texture-Tools)
+
 ![screenshot](http://yuraj.ucoz.com/HLTextureTools_15.png)
