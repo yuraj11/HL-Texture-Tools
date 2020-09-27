@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using HLTools;
 
@@ -11,7 +6,7 @@ namespace HLTextureTools
 {
     public partial class EditForm : Form
     {
-        SpriteLoader sprLoader;
+        private readonly SpriteLoader sprLoader;
 
         public EditForm()
         {
@@ -21,60 +16,59 @@ namespace HLTextureTools
         public EditForm(SpriteLoader spriteLoader)
         {
             InitializeComponent();
-            this.sprLoader = spriteLoader;
+            sprLoader = spriteLoader;
 
             switch (spriteLoader.SpriteHeader.Type)
             {
                 case SprType.VP_PARALLEL_UPRIGHT:
-                    radioButton1.Checked = true;
+                    radioParallelUpright.Checked = true;
                     break;
                 case SprType.FACING_UPRIGHT:
-                    radioButton2.Checked = true;
+                    radioFacingUpright.Checked = true;
                     break;
                 case SprType.VP_PARALLEL:
-                    radioButton3.Checked = true;
+                    radioParallel.Checked = true;
                     break;
                 case SprType.ORIENTED:
-                    radioButton4.Checked = true;
+                    radioOriented.Checked = true;
                     break;
                 case SprType.VP_PARALLEL_ORIENTED:
-                    radioButton5.Checked = true;
+                    radioParallelOriented.Checked = true;
                     break;
                 default:
-                    radioButton1.Checked = true;
+                    radioParallelUpright.Checked = true;
                     break;
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             SprType newSprType = SprType.VP_PARALLEL_UPRIGHT;
-            if (radioButton1.Checked)
+            if (radioParallelUpright.Checked)
             {
                 newSprType = SprType.VP_PARALLEL_UPRIGHT;
             }
-            else if (radioButton2.Checked)
+            else if (radioFacingUpright.Checked)
             {
                 newSprType = SprType.FACING_UPRIGHT;
             }
-            else if (radioButton3.Checked)
+            else if (radioParallel.Checked)
             {
                 newSprType = SprType.VP_PARALLEL;
             }
-            else if (radioButton4.Checked)
+            else if (radioOriented.Checked)
             {
                 newSprType = SprType.ORIENTED;
             }
-            else if (radioButton5.Checked)
+            else if (radioParallelOriented.Checked)
             {
                 newSprType = SprType.VP_PARALLEL_ORIENTED;
             }
+
             //Save sprite
             try
             {
                 sprLoader.FixSpriteType(newSprType);
-
-                //Close window
                 Close();
             }
             catch (Exception exp)
@@ -83,9 +77,8 @@ namespace HLTextureTools
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnCancel_Click(object sender, EventArgs e)
         {
-            //Close window
             Close();
         }
     }

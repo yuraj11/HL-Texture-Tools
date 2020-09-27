@@ -1,6 +1,6 @@
 ﻿/*
   HLTools by Yuraj
-  Copyright © 2006-201 Juraj Novák (Yuraj)
+  Copyright © 2006-2020 Juraj Novák (Yuraj)
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using FreeImageAPI;
 
 namespace HLTools
@@ -58,7 +59,7 @@ namespace HLTools
     }
 
     /// <summary>
-    /// GoldSrc Sprites Parser 0.7
+    /// GoldSrc Sprites Parser 0.8
     /// Written by Yuraj.
     /// </summary>
     public class SpriteLoader
@@ -90,27 +91,16 @@ namespace HLTools
             public Bitmap Image;
         }
 
-        //Consts
-        public const string SpriteHeaderId = "IDSP";
-        private const int MaxPaletteColors = 256;
-
-        //Private members
         public SprHeader SpriteHeader { get; private set; }
         public string Filename { get; private set; }
-        private List<Frame> frames;
+
+        private const string SpriteHeaderId = "IDSP";
+        private const int MaxPaletteColors = 256;
+
         private BinaryReader binReader;
         private FileStream fs;
         private long[] indexesOfPixelPositions;
         private uint[] pixelsLengths;
-        //private int lastImageWidth;
-
-        /// <summary>
-        /// Default SpriteLoader constructor.
-        /// </summary>
-        public SpriteLoader()
-        {
-            frames = new List<Frame>();
-        }
 
         /// <summary>
         /// Load and read Sprite file.
@@ -123,33 +113,34 @@ namespace HLTools
             Filename = inputFile;
 
             //Reset previous loaded data
-            Bitmap bmp = null;
-            frames.Clear();
+            List<Frame> frames = new List<Frame>();
             Close();
 
             fs = new FileStream(inputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
             binReader = new BinaryReader(fs);
 
             //First try get header ID
-            SprHeader SpriteHeader = new SprHeader();
-            SpriteHeader.Id = binReader.ReadChars(4);
-            string magic = new string(SpriteHeader.Id);
+            SprHeader spriteHeader = new SprHeader();
+            spriteHeader.Id = binReader.ReadChars(4);
+
+            string magic = new string(spriteHeader.Id);
             if (magic != SpriteHeaderId) //if invalid SPR file
             {
                 throw new HLToolsUnsupportedFile("Invalid or unsupported Sprite File!");
             }
 
-            SpriteHeader.Version = binReader.ReadInt32();
-            SpriteHeader.Type = (SprType)binReader.ReadInt32();
-            SpriteHeader.TextFormat = (SprTextFormat)binReader.ReadInt32();
-            SpriteHeader.BoundingRadius = binReader.ReadSingle();
-            SpriteHeader.MaxWidth = binReader.ReadInt32();
-            SpriteHeader.MaxHeight = binReader.ReadInt32();
-            SpriteHeader.NumFrames = binReader.ReadInt32();
-            SpriteHeader.BeamLen = binReader.ReadSingle();
-            SpriteHeader.SynchType = (SprSynchType)binReader.ReadInt32();
+            spriteHeader.Version = binReader.ReadInt32();
+            spriteHeader.Type = (SprType)binReader.ReadInt32();
+            spriteHeader.TextFormat = (SprTextFormat)binReader.ReadInt32();
+            spriteHeader.BoundingRadius = binReader.ReadSingle();
+            spriteHeader.MaxWidth = binReader.ReadInt32();
+            spriteHeader.MaxHeight = binReader.ReadInt32();
+            spriteHeader.NumFrames = binReader.ReadInt32();
+            spriteHeader.BeamLen = binReader.ReadSingle();
+            spriteHeader.SynchType = (SprSynchType)binReader.ReadInt32();
 
-            this.SpriteHeader = SpriteHeader;
+            SpriteHeader = spriteHeader;
+
             //Palette length
             ushort u = binReader.ReadUInt16();
 
@@ -175,7 +166,7 @@ namespace HLTools
                     //Check for transparent color
                     if (i == (u - 1)) //256th color is alpha
                     {
-                        if (transparent && SpriteHeader.TextFormat == SprTextFormat.SPR_ALPHTEST)
+                        if (transparent && spriteHeader.TextFormat == SprTextFormat.SPR_ALPHTEST)
                         {
                             pal.Entries[i] = Color.FromArgb(0, pal.Entries[i]);
                         }
@@ -186,12 +177,12 @@ namespace HLTools
                 }
             }
 
-            indexesOfPixelPositions = new long[SpriteHeader.NumFrames];
-            pixelsLengths = new uint[SpriteHeader.NumFrames];
+            indexesOfPixelPositions = new long[spriteHeader.NumFrames];
+            pixelsLengths = new uint[spriteHeader.NumFrames];
 
 
             //Load frames
-            for (int i = 0; i < SpriteHeader.NumFrames; i++)
+            for (int i = 0; i < spriteHeader.NumFrames; i++)
             {
                 int frameGroup = binReader.ReadInt32();
                 int frameOriginX = binReader.ReadInt32();
@@ -199,8 +190,10 @@ namespace HLTools
                 int frameWidth = binReader.ReadInt32();
                 int frameHeight = binReader.ReadInt32();
 
-                bmp = new Bitmap(frameWidth, frameHeight, PixelFormat.Format8bppIndexed);
-                bmp.Palette = pal;
+                Bitmap bmp = new Bitmap(frameWidth, frameHeight, PixelFormat.Format8bppIndexed)
+                {
+                    Palette = pal
+                };
 
                 //Get pixelsize
                 uint pixelSize = (uint)(frameWidth * frameHeight);
@@ -212,19 +205,26 @@ namespace HLTools
                 byte[] pixels = binReader.ReadBytes((int)pixelSize);
 
                 //Lock bitmap for pixel manipulation
-                BitmapData bmd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+                BitmapData bmd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
                 System.Runtime.InteropServices.Marshal.Copy(pixels, 0, bmd.Scan0, pixels.Length);
                 bmp.UnlockBits(bmd);
 
                 //Insert new frame to frames list
-                Frame frame = new Frame();
-                frame.OriginX = frameOriginX;
-                frame.OriginY = frameOriginY;
-                frame.Image = bmp;
+                Frame frame = new Frame
+                {
+                    OriginX = frameOriginX,
+                    OriginY = frameOriginY,
+                    Image = bmp
+                };
                 frames.Add(frame);
             }
 
             return frames.ToArray();
+        }
+
+        public static void CreateSpriteFile(string outputPath, string[] files, SprType spriteType, SprTextFormat textFormat, int palIndex)
+        {
+            CreateSpriteFile(outputPath, files, spriteType, textFormat, palIndex, Color.Blue);
         }
 
         /// <summary>
@@ -235,23 +235,27 @@ namespace HLTools
         /// <param name="spriteType">SprType</param>
         /// <param name="textFormat">SprTextFormat</param>
         /// <param name="palIndex">Which palette use from files</param>
-        public static void CreateSpriteFile(string outputPath, string[] files, SprType spriteType, SprTextFormat textFormat, int palIndex)
+        public static void CreateSpriteFile(string outputPath, string[] files, SprType spriteType, SprTextFormat textFormat, int palIndex, Color alphaReplacementColor)
         {
-            List<FreeImageBitmap> images = new List<FreeImageBitmap>();
-            foreach (string item in files)
-            {
-                images.Add(new FreeImageBitmap(item));
-            }
+            List<FreeImageBitmap> images = files.Select(file => new FreeImageBitmap(file)).ToList();
+
             //Retrieve maximum width, height
             int prevSize = 0;
             int maxW = 0, maxH = 0;
-            foreach (Bitmap item in images)
+
+            for (int i = 0; i < images.Count; i++)
             {
-                if ((item.Height + item.Width) > prevSize)
+                FreeImageBitmap image = images[i];
+                if ((image.Height + image.Width) > prevSize)
                 {
-                    prevSize = item.Height + item.Width;
-                    maxW = item.Width;
-                    maxH = item.Height;
+                    prevSize = image.Height + image.Width;
+                    maxW = image.Width;
+                    maxH = image.Height;
+                }
+
+                if (image.IsTransparent)
+                {
+                    image.SwapColors(new RGBQUAD(Color.Transparent), new RGBQUAD(alphaReplacementColor), false);
                 }
             }
 
@@ -297,8 +301,8 @@ namespace HLTools
                 for (int i = 0; i < images.Count; i++)
                 {
                     bw.Write(0); //group
-                    bw.Write(-(int)(images[i].Width / 2)); //origin x
-                    bw.Write((int)(images[i].Height / 2)); //origin y
+                    bw.Write(-(images[i].Width / 2)); //origin x
+                    bw.Write(images[i].Height / 2); //origin y
                     bw.Write(images[i].Width); //w
                     bw.Write(images[i].Height); //h
 
@@ -307,15 +311,11 @@ namespace HLTools
                     System.Runtime.InteropServices.Marshal.Copy(images[i].GetScanlinePointer(0), arr, 0, arr.Length);
                     Array.Reverse(arr);
                     bw.Write(arr);
-
                 }
             }
 
             //Free resources
-            for (int i = 0; i < images.Count; i++)
-            {
-                images[i].Dispose();
-            }
+            images.ForEach(image => image.Dispose());
         }
 
 
@@ -406,7 +406,7 @@ namespace HLTools
                 }
             }
         }
-        
+
         public byte GetPixelIndexAtPos(int frameIndex, int x, int y)
         {
             long relativePos = (y * SpriteHeader.MaxWidth) + x;

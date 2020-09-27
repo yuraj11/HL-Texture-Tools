@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
 using System.IO;
 
 namespace HLTextureTools
@@ -20,7 +15,7 @@ namespace HLTextureTools
         public static ColorPalette palette = null;
         public static bool backup = false;
         private Color[] originalColorsPalette = null;
-        private const int ColorItemSize = 18;
+        private const int ColorItemSize = 22;
         private const int MaxItemsRow = 16;
         private bool isTransparentTexture = false;
 
@@ -35,8 +30,8 @@ namespace HLTextureTools
         {
             InitializeComponent();
 
-            this.isTransparentTexture = isTransparent;
-            this.Text += name;
+            isTransparentTexture = isTransparent;
+            Text += name;
 
             //Backup actual color palette
             originalColorsPalette = new Color[colPal.Entries.Length];
@@ -60,8 +55,11 @@ namespace HLTextureTools
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             //Check if is palette set
-            if (palette == null) return;
-            
+            if (palette == null)
+            {
+                return;
+            }
+
             //Render color palette
             for (int i = 0, x = 0, y = 0; i < palette.Entries.Length; i++)
             {
@@ -75,7 +73,7 @@ namespace HLTextureTools
 
                     int xPos = x * ColorItemSize;
                     e.Graphics.FillRectangle(brush, xPos, y, ColorItemSize, ColorItemSize);
-                    
+
                     x++;
                 }
             }
@@ -85,7 +83,6 @@ namespace HLTextureTools
             //pictureBox1.Update();
         }
 
-        
         private void DrawSelectedItem(PaintEventArgs e)
         {
             //Calculate relative tile positions
@@ -125,13 +122,12 @@ namespace HLTextureTools
             }
         }
 
-  
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 palColorSelect.Color = palette.Entries[tileX + (tileY * MaxItemsRow)];
-                if (palColorSelect.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (palColorSelect.ShowDialog() == DialogResult.OK)
                 {
                     palette.Entries[tileX + (tileY * MaxItemsRow)] = palColorSelect.Color;
                     pictureBox1.Invalidate();
@@ -139,7 +135,7 @@ namespace HLTextureTools
                 }
             }
             //Copy color to clipboard
-            else if (e.Button == System.Windows.Forms.MouseButtons.Left && textBox1.TextLength > 0)
+            else if (e.Button == MouseButtons.Left && textBox1.TextLength > 0)
             {
                 Clipboard.SetText(textBox1.Text);
             }
@@ -150,10 +146,9 @@ namespace HLTextureTools
             pictureBox1.Invalidate();
         }
 
-
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 using (StreamWriter sw = new StreamWriter(saveFileDialog.FileName, false))
                 {
@@ -162,11 +157,7 @@ namespace HLTextureTools
                     sw.WriteLine("256");
                     for (int i = 0; i < palette.Entries.Length; i++)
                     {
-                        sw.WriteLine(
-                            string.Format("{0} {1} {2}", 
-                            palette.Entries[i].R, 
-                            palette.Entries[i].G, 
-                            palette.Entries[i].B));
+                        sw.WriteLine(string.Format("{0} {1} {2}", palette.Entries[i].R, palette.Entries[i].G, palette.Entries[i].B));
                     }
                 }
             }
@@ -174,7 +165,7 @@ namespace HLTextureTools
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 //Try parse palette file
                 try
@@ -220,18 +211,17 @@ namespace HLTextureTools
             {
                 palette.Entries[i] = originalColorsPalette[i];
             }
-            
+
             updatePalette(palette);
             pictureBox1.Invalidate();
         }
-
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             //Close window on escape
             if (msg.WParam.ToInt32() == (int)Keys.Escape)
             {
-                this.Close();
+                Close();
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
@@ -251,7 +241,7 @@ namespace HLTextureTools
 
         private void PaletteForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (IsChangedPalette() && this.DialogResult != System.Windows.Forms.DialogResult.Yes)
+            if (IsChangedPalette() && this.DialogResult != DialogResult.Yes)
             {
                 linkLabel3_LinkClicked(sender, null);
             }
@@ -259,18 +249,16 @@ namespace HLTextureTools
 
         private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (palColorSelect.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (palColorSelect.ShowDialog() == DialogResult.OK)
             {
-      
+
                 for (int i = 0; i < palette.Entries.Length; i++)
                 {
                     palette.Entries[i] = palColorSelect.Color;
-                    
+
                 }
                 pictureBox1.Invalidate();
                 updatePalette(palette);
-
-                
             }
         }
 
@@ -279,11 +267,8 @@ namespace HLTextureTools
             //Grayscale
             for (int i = 0; i < GetPaletteLength(); i++)
             {
-                
-                int gray = (int)((palette.Entries[i].R * .3) + (palette.Entries[i].G * .59)
-             + (palette.Entries[i].B * .11));
+                int gray = (int)((palette.Entries[i].R * .3) + (palette.Entries[i].G * .59) + (palette.Entries[i].B * .11));
                 palette.Entries[i] = Color.FromArgb(gray, gray, gray);
-
             }
             pictureBox1.Invalidate();
             updatePalette(palette);
@@ -295,8 +280,8 @@ namespace HLTextureTools
             {
                 linkLabel3_LinkClicked(sender, null);
             }
-            
-            this.Close();
+
+            Close();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -305,14 +290,13 @@ namespace HLTextureTools
             {
                 updatePalette(palette);
                 backup = checkBox1.Checked;
-                DialogResult = System.Windows.Forms.DialogResult.Yes;
-
+                DialogResult = DialogResult.Yes;
             }
             else
             {
                 backup = false;
             }
-            this.Close();
+            Close();
         }
 
         private void linkLabel6_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -331,9 +315,8 @@ namespace HLTextureTools
                 oB = (int)((r * .272) + (g * .534) + (b * .131));
 
                 palette.Entries[i] = Color.FromArgb(Math.Min(oR, 255), Math.Min(oG, 255), Math.Min(oB, 255));
-
             }
-            
+
             pictureBox1.Invalidate();
             updatePalette(palette);
         }
@@ -387,17 +370,11 @@ namespace HLTextureTools
                 g = palette.Entries[i].G - 10;
                 b = palette.Entries[i].B - 10;
 
-                palette.Entries[i] = Color.FromArgb(
-                    Math.Max(r, 0),
-                    Math.Max(g, 0),
-                    Math.Max(b, 0)
-                    );
+                palette.Entries[i] = Color.FromArgb(Math.Max(r, 0), Math.Max(g, 0), Math.Max(b, 0));
             }
 
             pictureBox1.Invalidate();
             updatePalette(palette);
         }
-
-       
     }
 }

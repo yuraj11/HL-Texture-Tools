@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.Collections;
 using System.Windows.Forms;
@@ -14,12 +13,11 @@ namespace HLTextureTools
         {
             get
             {
-                return this.allowRowReorder;
+                return allowRowReorder;
             }
             set
             {
-                this.allowRowReorder = value;
-                base.AllowDrop = value;
+                allowRowReorder = value;
             }
         }
 
@@ -38,7 +36,7 @@ namespace HLTextureTools
         public ListViewEx()
             : base()
         {
-            this.AllowRowReorder = true;
+            AllowRowReorder = true;
             base.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             this.SetStyle(ControlStyles.EnableNotifyMessage, true);
         }
@@ -56,28 +54,30 @@ namespace HLTextureTools
         {
             base.OnDragDrop(e);
 
-            if (!this.AllowRowReorder)
+            AllowDrop = false;
+
+            if (!AllowRowReorder)
             {
                 return;
             }
-            if (base.SelectedItems.Count == 0)
+            if (SelectedItems.Count == 0)
             {
                 return;
             }
-            Point cp = base.PointToClient(new Point(e.X, e.Y));
-            ListViewItem dragToItem = base.GetItemAt(cp.X, cp.Y);
+            Point cp = PointToClient(new Point(e.X, e.Y));
+            ListViewItem dragToItem = GetItemAt(cp.X, cp.Y);
             if (dragToItem == null)
             {
                 return;
             }
             int dropIndex = dragToItem.Index;
-            if (dropIndex > base.SelectedItems[0].Index)
+            if (dropIndex > SelectedItems[0].Index)
             {
                 dropIndex++;
             }
             ArrayList insertItems =
-                new ArrayList(base.SelectedItems.Count);
-            foreach (ListViewItem item in base.SelectedItems)
+                new ArrayList(SelectedItems.Count);
+            foreach (ListViewItem item in SelectedItems)
             {
                 insertItems.Add(item.Clone());
             }
@@ -87,44 +87,35 @@ namespace HLTextureTools
                     (ListViewItem)insertItems[i];
                 base.Items.Insert(dropIndex, insertItem);
             }
-            foreach (ListViewItem removeItem in base.SelectedItems)
+            foreach (ListViewItem removeItem in SelectedItems)
             {
-                base.Items.Remove(removeItem);
+                Items.Remove(removeItem);
             }
-
-
         }
 
         protected override void OnDragOver(DragEventArgs e)
         {
-            if (!this.AllowRowReorder)
+            if (!AllowRowReorder || !e.Data.GetDataPresent(DataFormats.Text))
             {
-                e.Effect = DragDropEffects.None;
                 return;
             }
-            if (!e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-            Point cp = base.PointToClient(new Point(e.X, e.Y));
-            ListViewItem hoverItem = base.GetItemAt(cp.X, cp.Y);
+
+            Point cp = PointToClient(new Point(e.X, e.Y));
+            ListViewItem hoverItem = GetItemAt(cp.X, cp.Y);
             if (hoverItem == null)
             {
-                e.Effect = DragDropEffects.None;
                 return;
             }
-            foreach (ListViewItem moveItem in base.SelectedItems)
+            foreach (ListViewItem moveItem in SelectedItems)
             {
                 if (moveItem.Index == hoverItem.Index)
                 {
-                    e.Effect = DragDropEffects.None;
                     hoverItem.EnsureVisible();
                     return;
                 }
             }
             base.OnDragOver(e);
-            String text = (String)e.Data.GetData(REORDER.GetType());
+            string text = (string)e.Data.GetData(REORDER.GetType());
             if (text.CompareTo(REORDER) == 0)
             {
                 e.Effect = DragDropEffects.Move;
@@ -139,35 +130,26 @@ namespace HLTextureTools
         protected override void OnDragEnter(DragEventArgs e)
         {
             base.OnDragEnter(e);
-            if (!this.AllowRowReorder)
+            if (!AllowRowReorder || !e.Data.GetDataPresent(DataFormats.Text))
             {
-                e.Effect = DragDropEffects.None;
                 return;
             }
-            if (!e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-            base.OnDragEnter(e);
-            String text = (String)e.Data.GetData(REORDER.GetType());
+
+            string text = (string) e.Data.GetData(REORDER.GetType());
             if (text.CompareTo(REORDER) == 0)
             {
                 e.Effect = DragDropEffects.Move;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.None;
             }
         }
 
         protected override void OnItemDrag(ItemDragEventArgs e)
         {
-            base.OnItemDrag(e);
-            if (!this.AllowRowReorder)
+            if (!AllowRowReorder)
             {
                 return;
             }
+            AllowDrop = true;
+            base.OnItemDrag(e);
             base.DoDragDrop(REORDER, DragDropEffects.Move);
         }
     }

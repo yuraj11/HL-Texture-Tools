@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace HLTextureTools
@@ -36,7 +33,7 @@ namespace HLTextureTools
             buttonCancel.SetBounds(309, 72, 75, 23);
 
             label.AutoSize = true;
-            textBox.Anchor = textBox.Anchor | AnchorStyles.Right;
+            textBox.Anchor |= AnchorStyles.Right;
             buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 

@@ -1,0 +1,40 @@
+﻿<!doctype html>
+<html lang="en">
+	<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+		* {
+			font-family: Verdana,Geneva,sans-serif; 
+		}
+
+		ul  {
+			 margin-left: 0px;
+			 padding-left: 20px;
+		}
+	</style>
+	</head>
+	<body>
+		<b>⚠️ Warnings:</b>
+		<ul>
+			<li>You must check manually if every image in WAD  is divisible by 8.</li>
+			<li>HL WAD support only images with max. 256 colors, try to use 8bpp BMP files or you can use any image file format but it will be converted into 8bpp.</li>
+		</ul>
+
+		<b>💡 Tips:</b>
+		<ul>
+			<li>You can use transparent PNGs - transparent color will be automatically replaced by color defined in Settings section.</li>
+			<li>If you want create spray, add only one image (width * height must be equal or less than 10752, use table of texture sizes in Help menu), set texture name {LOGO and keep checked option Reserve last color in palette.</li>
+		</ul>
+
+		<b>The first character of the texture's name denotes its properties:</b>
+		<ul>
+			<li>{ transparent</li>
+			<li>! water</li>
+			<li>+ animated</li>
+			<li>+A toggled animate</li>
+			<li>- random tiling</li>
+			<li>~ comps, lights</li>
+		</ul>
+	</body>
+</html>

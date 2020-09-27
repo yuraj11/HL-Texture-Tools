@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Text;
 using System.Windows.Forms;
 
 namespace HLTextureTools
@@ -12,11 +9,10 @@ namespace HLTextureTools
     class UAC
     {
         [DllImport("user32")]
-        private static extern UInt32 SendMessage
-            (IntPtr hWnd, UInt32 msg, UInt32 wParam, UInt32 lParam);
+        private static extern uint SendMessage(IntPtr hWnd, uint msg, uint wParam, uint lParam);
 
         private const int BCM_FIRST = 0x1600; //Normal button
-        private const int BCM_SETSHIELD = (BCM_FIRST + 0x000C); //Elevated button
+        private const int BCM_SETSHIELD = BCM_FIRST + 0x000C; //Elevated button
 
         public static void SetShieldIcon(Control ctrl)
         {
@@ -32,12 +28,15 @@ namespace HLTextureTools
 
         public static bool RestartElevated(string args)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.UseShellExecute = true;
-            startInfo.WorkingDirectory = Environment.CurrentDirectory;
-            startInfo.FileName = Application.ExecutablePath;
-            startInfo.Verb = "runas";
-            startInfo.Arguments = args;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                WorkingDirectory = Environment.CurrentDirectory,
+                FileName = Application.ExecutablePath,
+                Verb = "runas",
+                Arguments = args
+            };
+
             try
             {
                 Process p = Process.Start(startInfo);
@@ -48,8 +47,6 @@ namespace HLTextureTools
             {
                 return false;
             }
-
-            
         }
     }
 }

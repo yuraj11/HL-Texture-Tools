@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace HLTextureTools
@@ -16,14 +12,13 @@ namespace HLTextureTools
         private VheWadManager wadManager;
         private static string currentWad;
 
-        public delegate void OpenFileDelegate(string filename);
-        private OpenFileDelegate openFileNow;
+        private readonly OpenFileDelegate openFileNow;
 
         public VheManager(OpenFileDelegate openFileDelegate, string currentWad = null)
         {
             InitializeComponent();
             VheManager.currentWad = currentWad;
-            this.openFileNow = openFileDelegate;
+            openFileNow = openFileDelegate;
         }
 
         public static void NewWadInViewer(string filename)
@@ -33,16 +28,16 @@ namespace HLTextureTools
 
         private void VheManager_Load(object sender, EventArgs e)
         {
-            this.wadManager = new VheWadManager();
-            listBox1.Items.AddRange(wadManager.GetWadList());
-            button3.Enabled = (listBox1.Items.Count > 0);
+            wadManager = new VheWadManager();
+            listTextures.Items.AddRange(wadManager.GetWadList());
+            btnRemoveAll.Enabled = listTextures.Items.Count > 0;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnAddTextures_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(currentWad) && !listBox1.Items.Contains(currentWad.ToLower()))
+            if (!string.IsNullOrEmpty(currentWad) && !listTextures.Items.Contains(currentWad.ToLower()))
             {
-                addWadMenu.Show(button1, new Point(0, button1.Height));
+                addWadMenu.Show(btnAddTextures, new Point(0, btnAddTextures.Height));
             }
             else
             {
@@ -50,59 +45,59 @@ namespace HLTextureTools
             }
         }
 
-      
-
-        private void button2_Click(object sender, EventArgs e)
+        private void btnRemoveTextures_Click(object sender, EventArgs e)
         {
-            while (listBox1.SelectedItem != null)
+            while (listTextures.SelectedItem != null)
             {
-                listBox1.Items.Remove(listBox1.SelectedItem);
+                listTextures.Items.Remove(listTextures.SelectedItem);
             }
             changed = true;
         }
 
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        private void openWadFileDialog_FileOk(object sender, CancelEventArgs e)
         {
-            string[] filenames = openFileDialog1.FileNames;
-            listBox1.BeginUpdate();
+            string[] filenames = openWadFileDialog.FileNames;
+            listTextures.BeginUpdate();
             for (int i = 0; i < filenames.Length; i++)
             {
                 filenames[i] = filenames[i].ToLower();
-                if (!listBox1.Items.Contains(filenames[i]))
+                if (!listTextures.Items.Contains(filenames[i]))
                 {
-                    listBox1.Items.Add(filenames[i]);
+                    listTextures.Items.Add(filenames[i]);
                 }
             }
-            listBox1.EndUpdate();
-            button3.Enabled = (listBox1.Items.Count > 0);
+            listTextures.EndUpdate();
+            btnRemoveAll.Enabled = listTextures.Items.Count > 0;
             changed = true;
         }
 
         private void fromFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
+            openWadFileDialog.ShowDialog();
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void listTextures_SelectedIndexChanged(object sender, EventArgs e)
         {
-            button2.Enabled = listBox1.SelectedItems.Count > 0;
+            btnRemoveTextures.Enabled = listTextures.SelectedItems.Count > 0;
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnRemoveAll_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Clear();
-            button2.Enabled = false;
+            listTextures.Items.Clear();
+            btnRemoveTextures.Enabled = false;
             changed = true;
-            button3.Enabled = false;
+            btnRemoveAll.Enabled = false;
         }
 
-        private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
+        private void listTextures_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index < 0)
+            {
                 return;
+            }
 
             //Listbox ownerdraw item
-            ListBox listBox = (sender as ListBox);
+            ListBox listBox = sender as ListBox;
             string itemTextOriginal = listBox.Items[e.Index].ToString();
             string fName = Path.GetFileName(itemTextOriginal);
             string currentItem = itemTextOriginal.Remove(itemTextOriginal.IndexOf(fName));
@@ -131,8 +126,11 @@ namespace HLTextureTools
         private void VheManager_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!changed)
+            {
                 return;
-            DialogResult res = MessageBox.Show("Do you wish to save changes?", this.Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+            }
+
+            DialogResult res = MessageBox.Show("Do you wish to save changes?", Text, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
             switch (res)
             {
                 case DialogResult.Cancel:
@@ -140,31 +138,31 @@ namespace HLTextureTools
                     break;
                 case DialogResult.Yes:
                     //Save
-                    string[] items = new string[listBox1.Items.Count];
-                    listBox1.Items.CopyTo(items, 0);
+                    string[] items = new string[listTextures.Items.Count];
+                    listTextures.Items.CopyTo(items, 0);
                     wadManager.SaveWadList(items);
                     break;
             }
         }
 
-        private void listBox1_KeyDown(object sender, KeyEventArgs e)
+        private void listTextures_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
             {
-                button2.PerformClick();
+                btnRemoveTextures.PerformClick();
             }
             else if (e.Control && e.KeyCode == Keys.A)
             {
                 //Deselect items
-                if (listBox1.SelectedItems.Count == listBox1.Items.Count)
+                if (listTextures.SelectedItems.Count == listTextures.Items.Count)
                 {
-                    listBox1.ClearSelected();
+                    listTextures.ClearSelected();
                 }
                 else
                 {
-                    for (int i = 0; i < listBox1.Items.Count; i++)
+                    for (int i = 0; i < listTextures.Items.Count; i++)
                     {
-                        listBox1.SetSelected(i, true);
+                        listTextures.SetSelected(i, true);
                     }
                 }
             }
@@ -172,18 +170,18 @@ namespace HLTextureTools
 
         private void currentWADToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Add(currentWad.ToLower());
+            listTextures.Items.Add(currentWad.ToLower());
             changed = true;
-            VheManager.currentWad = null;
+            currentWad = null;
         }
 
-        private void listBox1_DoubleClick(object sender, EventArgs e)
+        private void listTextures_DoubleClick(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem != null)
+            if (listTextures.SelectedItem != null)
             {
-                this.openFileNow(listBox1.SelectedItem.ToString());
+                openFileNow(listTextures.SelectedItem.ToString());
             }
-            listBox1.ClearSelected();
+            listTextures.ClearSelected();
         }
     }
 }

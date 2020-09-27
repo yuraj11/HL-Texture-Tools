@@ -7,15 +7,14 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using System.Linq;
 
 namespace HLTextureTools
 {
     public partial class MainForm : Form
     {
         //Initialize WAD and Sprite loaders
-        private WAD3Loader wadLoader = new WAD3Loader();
-        private SpriteLoader sprLoader = new SpriteLoader();
+        private readonly WAD3Loader wadLoader = new WAD3Loader();
+        private readonly SpriteLoader sprLoader = new SpriteLoader();
         private SpriteLoader.Frame[] frames;
 
         private string lastDirectory = string.Empty;
@@ -30,20 +29,19 @@ namespace HLTextureTools
         private Image lastImageViewed = null;
 
         //Startup path
-        public readonly string StartupPath = System.IO.Path.GetDirectoryName(
-            System.Reflection.Assembly.GetExecutingAssembly().Location);
-        private string recentFileName = "recent.dat";
+        public readonly string StartupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        private const string RecentFileName = "recent.dat";
 
         //Error msg
         private bool errorDraw = false;
         private string errorMessage = string.Empty;
-        private Font errorFont = new System.Drawing.Font("Verdana", 8.0f);
-        private SolidBrush thumbnailBg = new SolidBrush(Color.FromArgb(150, Color.Black));
-        private Font thumbnailFont = new Font("Verdana", 6.0f);
+        private readonly Font errorFont = new Font("Verdana", 10.0f);
+        private readonly SolidBrush thumbnailBg = new SolidBrush(Color.FromArgb(150, Color.Black));
+        private readonly Font thumbnailFont = new Font("Verdana", 6.0f);
 
         //MRU list
         private const int MRUnumber = 10;
-        private Queue<string> mruList = new Queue<string>();
+        private readonly Queue<string> mruList = new Queue<string>();
 
         //Zoom
         private float lastZoomX = 0.0f, lastZoomY = 0.0f;
@@ -51,7 +49,6 @@ namespace HLTextureTools
         
         //
         private const int TransparentColorAlphaMagic = 80;
-        private List<DetailTexture> detTextures = null;
 
         enum HLFileType
         {
@@ -62,14 +59,17 @@ namespace HLTextureTools
         {
             InitializeComponent();
             //Add current version to caption
-            this.Text += ProductVersion.Replace(".0.0", "") + " BETA";
+            Text += ProductVersion.Replace(".0.0", "");
 
             //Recent files load
             LoadRecentList();
             foreach (string item in mruList)
             {
-                ToolStripMenuItem fileRecent = new ToolStripMenuItem(ShortenPathname(item, 48), null, RecentItemClick);  //create new menu for each item in list
-                fileRecent.Tag = item;
+                ToolStripMenuItem fileRecent = new ToolStripMenuItem(ShortenPathname(item, 48), null, RecentItemClick)
+                {
+                    Tag = item
+                };  
+                //create new menu for each item in list
                 recFiles.DropDownItems.Insert(0, fileRecent); //add the menu to "recent" menu
             }
 
@@ -120,7 +120,7 @@ namespace HLTextureTools
             SaveSettings();
         }
 
-        public void UpdateImagePalette(System.Drawing.Imaging.ColorPalette pal)
+        public void UpdateImagePalette(ColorPalette pal)
         {
             //Update BG image
             if (pictureBox1.Image != null || pictureBox1.BackgroundImage != null)
@@ -157,13 +157,13 @@ namespace HLTextureTools
                 try
                 {
                     //Hide errors
-                    errorDraw = false;
+                    SetErrorImageMessage(null);
 
                     //Show image info in status bar
                     WAD3Loader.WADLump lumpInfo = new WAD3Loader.WADLump();
-                    if (listBox1.SelectedItem is WAD3Loader.WADLump)
+                    if (listBox1.SelectedItem is WAD3Loader.WADLump lump)
                     {
-                        lumpInfo = (WAD3Loader.WADLump)listBox1.SelectedItem;
+                        lumpInfo = lump;
                         sLbl3.Text = "Name:";
                         nameLbl.Text = lumpInfo.Name;
                     }
@@ -171,12 +171,6 @@ namespace HLTextureTools
                     //Try get lump
                     Bitmap bmp = wadLoader.GetLumpImage(listBox1.SelectedIndex, transparentBgItem.Checked).Image;
                     SetImage(bmp);
-
-                    //If detail textures ready
-                    /*if (detTextures != null && detTextures.Count > 0)
-                    {
-                        LoadDetailTexture(lumpInfo.Name);
-                    }*/
 
                     //Show size in statusbar
                     sizeLbl.Text = string.Format("{0:00}x{1:00}", bmp.Width, bmp.Height);
@@ -193,9 +187,8 @@ namespace HLTextureTools
                     sizeLbl.Text = "-";
                     pictureBox1.Image = null;
                     pictureBox1.BackgroundImage = null;
-                    errorDraw = true;
-                    errorMessage = "Error: " + ex.Message;
-                    pictureBox1.Invalidate();
+
+                    SetErrorImageMessage("Error: " + ex.Message);
                 }
             }
             else if (currentFileType == HLFileType.Sprite)
@@ -216,6 +209,21 @@ namespace HLTextureTools
             }
 
             prevSelected = listBox1.SelectedItem;
+        }
+
+        private void SetErrorImageMessage(string message)
+        {
+            if (message != null)
+            {
+                errorDraw = true;
+                errorMessage = message;
+                
+            } 
+            else
+            {
+                errorDraw = false;
+            }
+            pictureBox1.Invalidate();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -312,7 +320,7 @@ namespace HLTextureTools
                     //UGLY HACK!!!
                     return;
                 }
-                this.Activate();
+                Activate();
 
                 //Disable menu/toolbar items
                 saveToolStripButton.Enabled = false;
@@ -335,150 +343,31 @@ namespace HLTextureTools
                 paletteStripButton.Enabled = false;
                 editToolStripMenuItem.Enabled = false;
 
-                errorDraw = false;
+                SetErrorImageMessage(null);
                 pictureBox1.Image = null;
                 listBox1.Enabled = true;
 
-                string ext = Path.GetExtension(filename).ToLower();
-                if (ext == ".wad")
+                switch (Path.GetExtension(filename).ToLower())
                 {
-                    //Stop animation if running
-                    timerAnimate.Enabled = false;
-                    runSprToolButton.Image = Properties.Resources.control_play_blue;
-
-                    wadLoader.LoadFile(filename);
-                    currentFileType = HLFileType.Wad;
-
-                    //Recent
-                    SaveRecentFile(filename);
-
-                    VheManager.NewWadInViewer(filename);
-                }
-                else if (ext == ".spr")
-                {
-                    frames = sprLoader.LoadFile(filename, transparentBgItem.Checked);
-
-                    if (frames.Length > 0 && sprLoader.SpriteHeader.TextFormat == SprTextFormat.SPR_ADDITIVE)
-                    {
-                        pictureBox1.BackColor =
-                            Color.FromArgb(255, frames[0].Image.Palette.Entries[frames[0].Image.Palette.Entries.Length - 1]);
-                    }
-
-                    currentFileType = HLFileType.Sprite;
-                    if (frames.Length > 1) //If sprite contains more frames
-                    {
-                        runSprToolButton.Enabled = true;
-                        animateMenuItem.Enabled = true;
-
-                    }
-                    else
-                    {
-                        //Stop animation if running
-                        timerAnimate.Enabled = false;
-                        runSprToolButton.Image = Properties.Resources.control_play_blue;
-                    }
-
-                    //
-                    listViewEx1.Hide();
-                    listBox1.Show();
-
-                    sLbl2.Visible = true;
-                    typeLbl.Visible = true;
-                    editToolStripMenuItem.Enabled = true;
-                    toolStripButton1.Enabled = false;
-                    //Recent
-                    SaveRecentFile(filename);
-                }
-                else
-                {
-                    MessageBox.Show("Unknown file type!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    case ".wad":
+                        LoadWadFile(filename);
+                        break;
+                    case ".spr":
+                        LoadSpriteFile(filename);
+                        break;
+                    default:
+                        SetErrorImageMessage(string.Format("ERROR: Unknown file type! [{0}]", Path.GetFileName(filename)));
+                        return;
                 }
 
+                //Update filesbox current name
                 filesBox.Text = Path.GetFileName(filename);
+
                 //Load list of supported files in directory
-                string actualDir = Path.GetDirectoryName(filename);
-                if (actualDir != lastDirectory || currentFileType != lastFileType)
-                {
-                    filesBox.Enabled = true;
-                    filesBox.BeginUpdate();
-                    filesBox.Items.Clear();
-
-                    string[] files = Directory.GetFiles(actualDir, (currentFileType == HLFileType.Wad) ? "*.wad" : "*.spr", SearchOption.TopDirectoryOnly);
-                    string[] filesNew = new string[files.Length];
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        filesNew[i] = Path.GetFileName(files[i]);
-                    }
-                    filesBox.Items.AddRange(filesNew);
-                    filesBox.EndUpdate();
-
-                    //Prev/Next buttons
-                    if (files.Length > 0)
-                    {
-                        prevFileBtn.Enabled = true;
-                        nextFileBtn.Enabled = true;
-                        dontFireSelectEventFilesBox = true;
-                        filesBox.SelectedIndex = filesBox.FindStringExact(filesBox.Text);
-                        dontFireSelectEventFilesBox = false;
-                        CheckControlsWays();
-                    }
-                }
+                LoadAllCompatibleFilesInDirectory(filename);
 
                 //Insert lumps to listbox
-                listBox1.BeginUpdate();
-                listBox1.Items.Clear();
-
-                if (currentFileType == HLFileType.Wad)
-                {
-                    foreach (WAD3Loader.WADLump item in wadLoader.LumpsInfo)
-                    {
-                        listBox1.Items.Add(item);
-                    }
-                    listBox1.EndUpdate();
-
-                    //Thumbnail mode
-                    //Virtual size of listview
-                    if (listViewEx1.Items.Count > 0)
-                    {
-                        listViewEx1.Items[0].Selected = true;
-                        listViewEx1.Items[0].EnsureVisible();
-                    }
-
-                    listViewEx1.VirtualListSize = wadLoader.LumpsInfo.Count;
-                    toolStripButton1.Enabled = true;
-
-                    tlCache.Images.Clear();
-                    if (toolStripButton1.Checked)
-                    {
-                        UpdateImageCache();
-                    }
-                    //
-                }
-                else if (currentFileType == HLFileType.Sprite)
-                {
-                    for (int i = 0; i < frames.Length; i++)
-                    {
-                        listBox1.Items.Add("Frame #" + i);
-                    }
-                    listBox1.EndUpdate();
-                }
-
-
-
-
-                if (currentFileType == HLFileType.Wad)
-                {
-                    totalLbl.Text = string.Format("{0:0000}", listBox1.Items.Count);
-                }
-                else if (currentFileType == HLFileType.Sprite)
-                {
-                    totalLbl.Text = string.Format("{0:0000}", listBox1.Items.Count);
-                    typeLbl.Text = string.Format("{0} | {1}", sprLoader.SpriteHeader.Type.ToString(), sprLoader.SpriteHeader.TextFormat.ToString());
-                }
-
-                //Set listbox selected item index
-                listBox1.SelectedIndex = 0;
+                InsertTextureEntries();
 
                 //Enable extract/copy
                 saveToolStripButton.Enabled = true;
@@ -502,6 +391,12 @@ namespace HLTextureTools
                 lastDirectory = Path.GetDirectoryName(filename);
                 lastFileType = currentFileType;
                 lastFilename = filename;
+
+                //Set listbox selected item index
+                if (listBox1.Items.Count > 0)
+                {
+                    listBox1.SelectedIndex = 0;
+                }
             }
 
             catch (Exception ex)
@@ -509,19 +404,142 @@ namespace HLTextureTools
                 listViewEx1.VirtualListSize = 0;
                 listBox1.Items.Clear();
                 totalLbl.Text = "-1";
-                MessageBox.Show(ex.Message, "Error ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetErrorImageMessage(string.Format("ERROR: While opening file! [{0}]\nDetail: {1}", Path.GetFileName(filename), ex.Message));
                 listBox1.Enabled = false;
                 textBox1.Enabled = false;
-                lastDirectory = Path.GetDirectoryName(filename);
-                lastFileType = currentFileType;
+            }
+        }
 
+        private void LoadWadFile(string filename)
+        {
+            //Stop animation if running
+            timerAnimate.Enabled = false;
+            runSprToolButton.Image = Properties.Resources.control_play_blue;
+
+            wadLoader.LoadFile(filename);
+            currentFileType = HLFileType.Wad;
+
+            //Recent
+            SaveRecentFile(filename);
+
+            VheManager.NewWadInViewer(filename);
+
+            totalLbl.Text = string.Format("{0:0000}", wadLoader.LumpsInfo.Count);
+        }
+
+        private void LoadSpriteFile(string filename)
+        {
+            frames = sprLoader.LoadFile(filename, transparentBgItem.Checked);
+
+            if (frames.Length > 0 && sprLoader.SpriteHeader.TextFormat == SprTextFormat.SPR_ADDITIVE)
+            {
+                pictureBox1.BackColor = Color.FromArgb(255, frames[0].Image.Palette.Entries[frames[0].Image.Palette.Entries.Length - 1]);
+            }
+
+            currentFileType = HLFileType.Sprite;
+            if (frames.Length > 1) //If sprite contains more frames
+            {
+                runSprToolButton.Enabled = true;
+                animateMenuItem.Enabled = true;
+
+            }
+            else
+            {
+                //Stop animation if running
+                timerAnimate.Enabled = false;
+                runSprToolButton.Image = Properties.Resources.control_play_blue;
+            }
+
+            //
+            listViewEx1.Hide();
+            listBox1.Show();
+
+            sLbl2.Visible = true;
+            typeLbl.Visible = true;
+            editToolStripMenuItem.Enabled = true;
+            toolStripButton1.Enabled = false;
+            //Recent
+            SaveRecentFile(filename);
+
+            totalLbl.Text = string.Format("{0:0000}", frames.Length);
+            typeLbl.Text = string.Format("{0} | {1}", sprLoader.SpriteHeader.Type.ToString(), sprLoader.SpriteHeader.TextFormat.ToString());
+        }
+
+        private void LoadAllCompatibleFilesInDirectory(string filename)
+        {
+            string actualDir = Path.GetDirectoryName(filename);
+            if (actualDir != lastDirectory || currentFileType != lastFileType)
+            {
+                filesBox.Enabled = true;
+                filesBox.BeginUpdate();
+                filesBox.Items.Clear();
+
+                string[] files = Directory.GetFiles(actualDir, (currentFileType == HLFileType.Wad) ? "*.wad" : "*.spr", SearchOption.TopDirectoryOnly);
+                string[] filesNew = new string[files.Length];
+                for (int i = 0; i < files.Length; i++)
+                {
+                    filesNew[i] = Path.GetFileName(files[i]);
+                }
+                filesBox.Items.AddRange(filesNew);
+                filesBox.EndUpdate();
+
+                //Prev/Next buttons
+                if (files.Length > 0)
+                {
+                    prevFileBtn.Enabled = true;
+                    nextFileBtn.Enabled = true;
+                    dontFireSelectEventFilesBox = true;
+                    filesBox.SelectedIndex = filesBox.FindStringExact(filesBox.Text);
+                    dontFireSelectEventFilesBox = false;
+                    CheckControlsWays();
+                }
+            }
+        }
+
+        private void InsertTextureEntries()
+        {
+            listBox1.BeginUpdate();
+            listBox1.Items.Clear();
+
+            if (currentFileType == HLFileType.Wad)
+            {
+                foreach (WAD3Loader.WADLump item in wadLoader.LumpsInfo)
+                {
+                    listBox1.Items.Add(item);
+                }
+                listBox1.EndUpdate();
+
+                //Thumbnail mode
+                //Virtual size of listview
+                if (listViewEx1.Items.Count > 0)
+                {
+                    listViewEx1.Items[0].Selected = true;
+                    listViewEx1.Items[0].EnsureVisible();
+                }
+
+                listViewEx1.VirtualListSize = wadLoader.LumpsInfo.Count;
+                toolStripButton1.Enabled = true;
+
+                tlCache.Images.Clear();
+                if (toolStripButton1.Checked)
+                {
+                    UpdateImageCache();
+                }
+            }
+            else if (currentFileType == HLFileType.Sprite)
+            {
+                for (int i = 0; i < frames.Length; i++)
+                {
+                    listBox1.Items.Add("Frame #" + i);
+                }
+                listBox1.EndUpdate();
             }
         }
 
         private void openFileItem_Click(object sender, EventArgs e)
         {
             //Show open file dialog, try open file
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 OpenFile(openFileDialog.FileName);
             }
@@ -531,14 +549,14 @@ namespace HLTextureTools
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Exit
-            this.Close();
+            Close();
         }
 
         private void bgColorItem_Click(object sender, EventArgs e)
         {
             //Set bg color
             colorDialog.Color = pictureBox1.BackColor;
-            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 pictureBox1.BackColor = colorDialog.Color;
             }
@@ -553,27 +571,27 @@ namespace HLTextureTools
         private void extractImageItem_Click(object sender, EventArgs e)
         {
             //Extract current image
-            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                System.Drawing.Imaging.ImageFormat format;
+                ImageFormat format;
 
                 switch (Path.GetExtension(saveFileDialog.FileName).ToLower())
                 {
                     case ".png":
-                        format = System.Drawing.Imaging.ImageFormat.Png;
+                        format = ImageFormat.Png;
                         break;
                     case ".jpeg":
                     case ".jpg":
-                        format = System.Drawing.Imaging.ImageFormat.Jpeg;
+                        format = ImageFormat.Jpeg;
                         break;
                     case ".gif":
-                        format = System.Drawing.Imaging.ImageFormat.Gif;
+                        format = ImageFormat.Gif;
                         break;
                     case ".tiff":
-                        format = System.Drawing.Imaging.ImageFormat.Tiff;
+                        format = ImageFormat.Tiff;
                         break;
                     default:
-                        format = System.Drawing.Imaging.ImageFormat.Bmp;
+                        format = ImageFormat.Bmp;
                         break;
                 }
 
@@ -588,7 +606,7 @@ namespace HLTextureTools
         private void colorPaletteToolItem_Click(object sender, EventArgs e)
         {
             //Get color palette from current image
-            System.Drawing.Imaging.ColorPalette pal = null;
+            ColorPalette pal = null;
             if (lastImageViewed != null)
             {
                 pal = lastImageViewed.Palette;
@@ -611,7 +629,7 @@ namespace HLTextureTools
                 PaletteForm palForm = new PaletteForm(selItemText.StartsWith("{") || (currentFileType == HLFileType.Sprite && sprLoader.SpriteHeader.TextFormat == SprTextFormat.SPR_ALPHTEST), 
                     title, pal, UpdateImagePalette);
 
-                if (palForm.ShowDialog() == System.Windows.Forms.DialogResult.Yes)
+                if (palForm.ShowDialog() == DialogResult.Yes)
                 {
                     //pictureBox1.Image.Palette = PaletteForm.palette;
 
@@ -636,7 +654,6 @@ namespace HLTextureTools
                         wadLoader.ChangeColorPalette(PaletteForm.palette);
                     }
                 }
-
             }
         }
 
@@ -650,7 +667,7 @@ namespace HLTextureTools
         private void SetImage(Image img)
         {
             //Reset zoom
-            this.lastImageViewed = img;
+            lastImageViewed = img;
             lastZoomX = 0.0f;
             lastZoomY = 0.0f;
 
@@ -846,8 +863,7 @@ namespace HLTextureTools
             //if anim. speed changed
             if (animSpeedTextBox.Text != "")
             {
-                int res;
-                if (!int.TryParse(animSpeedTextBox.Text, out res) || res < 1)
+                if (!int.TryParse(animSpeedTextBox.Text, out int res) || res < 1)
                 {
                     animSpeedTextBox.Text = "100";
                     timerAnimate.Interval = 100;
@@ -861,31 +877,31 @@ namespace HLTextureTools
         }
 
         #region Extract All
-        private void ExtractAll(System.Drawing.Imaging.ImageFormat format)
+        private void ExtractAll(ImageFormat format)
         {
             //Extract all textures
-            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (folderDialog.ShowDialog() == DialogResult.OK)
             {
                 //Convert format to string
                 string ext = string.Empty;
 
-                if (format == System.Drawing.Imaging.ImageFormat.Png)
+                if (format == ImageFormat.Png)
                 {
                     ext = ".png";
                 }
-                else if (format == System.Drawing.Imaging.ImageFormat.Jpeg)
+                else if (format == ImageFormat.Jpeg)
                 {
                     ext = ".jpg";
                 }
-                else if (format == System.Drawing.Imaging.ImageFormat.Gif)
+                else if (format == ImageFormat.Gif)
                 {
                     ext = ".gif";
                 }
-                else if (format == System.Drawing.Imaging.ImageFormat.Tiff)
+                else if (format == ImageFormat.Tiff)
                 {
                     ext = ".tiff";
                 }
-                else if (format == System.Drawing.Imaging.ImageFormat.Bmp)
+                else if (format == ImageFormat.Bmp)
                 {
                     ext = ".bmp";
                 }
@@ -901,12 +917,11 @@ namespace HLTextureTools
                     progressBar.Maximum = listBox1.Items.Count;
                     for (int i = 0; i < listBox1.Items.Count; i++)
                     {
-                        if (listBox1.Items[i] is WAD3Loader.WADLump)
+                        if (listBox1.Items[i] is WAD3Loader.WADLump lumpInfo)
                         {
-                            WAD3Loader.WADLump lumpInfo = (WAD3Loader.WADLump)listBox1.Items[i];
                             using (Bitmap lump = wadLoader.GetLumpImage(i, transparentBgItem.Checked).Image)
                             {
-                                lump.Save(Path.Combine(folderDialog.SelectedPath, (CleanPath(lumpInfo.Name) + ext)), format);
+                                lump.Save(Path.Combine(folderDialog.SelectedPath, CleanPath(lumpInfo.Name) + ext), format);
                             }
                         }
                         progressBar.Value++;
@@ -948,34 +963,34 @@ namespace HLTextureTools
 
         private void asPNGToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractAll(System.Drawing.Imaging.ImageFormat.Png);
+            ExtractAll(ImageFormat.Png);
         }
 
         private void asJPEGToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractAll(System.Drawing.Imaging.ImageFormat.Jpeg);
+            ExtractAll(ImageFormat.Jpeg);
         }
 
         private void asBMPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractAll(System.Drawing.Imaging.ImageFormat.Bmp);
+            ExtractAll(ImageFormat.Bmp);
         }
 
         private void asGIFToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractAll(System.Drawing.Imaging.ImageFormat.Gif);
+            ExtractAll(ImageFormat.Gif);
         }
 
         private void asTIFFToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractAll(System.Drawing.Imaging.ImageFormat.Tiff);
+            ExtractAll(ImageFormat.Tiff);
         }
 
 
         private void namesToTXTToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Extract all textures names
-            if (saveFileDialogTxt.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveFileDialogTxt.ShowDialog() == DialogResult.OK)
             {
                 using (StreamWriter sw = new StreamWriter(saveFileDialogTxt.FileName, false))
                 {
@@ -1037,9 +1052,6 @@ namespace HLTextureTools
             panel1.AutoScrollPosition = Point.Empty;
         }
 
-        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
-
         private void ZoomImage(bool zoom)
         {
             if (pictureBox1.Image != null || pictureBox1.BackgroundImage != null)
@@ -1052,13 +1064,7 @@ namespace HLTextureTools
                     if (lastZoomY == 0.0f)
                         lastZoomY = lastImageViewed.Height;
 
-                    float lastZoomXPrev = lastZoomX;
-                    float lastZoomYPrev = lastZoomY;
-
-                    Color transp = Color.FromArgb(0, Color.Red);
-                    //Color transpB = Color.FromArgb(0, Color.Blue);
-                    IntPtr hBmp = ((Bitmap)lastImageViewed).GetHbitmap(transp);
-                    using (FreeImageAPI.FreeImageBitmap fBmp = FreeImageAPI.FreeImageBitmap.FromHbitmap(hBmp))
+                    using (FreeImageAPI.FreeImageBitmap fBmp = new FreeImageAPI.FreeImageBitmap(lastImageViewed))
                     {
 
                         if (zoom)
@@ -1100,8 +1106,7 @@ namespace HLTextureTools
                             pictureBox1.BackgroundImage = bmpScaled;
                         }
 
-                        DeleteObject(hBmp);
-                        panel1.AutoScrollMinSize = new System.Drawing.Size(fBmp.Width, fBmp.Height);
+                        panel1.AutoScrollMinSize = new Size(fBmp.Width, fBmp.Height);
                         GC.Collect();
                         toolStripButton2.Enabled = true;
                     }
@@ -1153,7 +1158,7 @@ namespace HLTextureTools
             try
             {
                 //read file stream
-                using (StreamReader listToRead = new StreamReader(Path.Combine(StartupPath, recentFileName)))
+                using (StreamReader listToRead = new StreamReader(Path.Combine(StartupPath, RecentFileName)))
                 {
                     string line;
                     while ((line = listToRead.ReadLine()) != null) //read each line until end of file
@@ -1189,14 +1194,16 @@ namespace HLTextureTools
             {
                 //create new menu for each item in list
                 ToolStripMenuItem fileRecent = new ToolStripMenuItem
-                             (ShortenPathname(item, 48), null, RecentItemClick);
-                fileRecent.Tag = item;
+                             (ShortenPathname(item, 48), null, RecentItemClick)
+                {
+                    Tag = item
+                };
                 //add the menu to "recent" menu
                 recFiles.DropDownItems.Insert(0, fileRecent);
             }
             //writing menu list to file
             //create file called "Recent.txt" located on app folder
-            using (StreamWriter stringToWrite = new StreamWriter(Path.Combine(StartupPath, recentFileName)))
+            using (StreamWriter stringToWrite = new StreamWriter(Path.Combine(StartupPath, RecentFileName)))
             {
                 foreach (string item in mruList)
                 {
@@ -1208,7 +1215,7 @@ namespace HLTextureTools
 
         private void RemoveRecentsFile()
         {
-            File.Delete(Path.Combine(StartupPath, recentFileName));
+            File.Delete(Path.Combine(StartupPath, RecentFileName));
         }
 
         private void RecentItemClick(object sender, EventArgs e)
@@ -1423,7 +1430,6 @@ namespace HLTextureTools
         {
             ChangeTransparentColorMode(true);
         }
-        
 
         private void DoBackup()
         {
@@ -1442,7 +1448,7 @@ namespace HLTextureTools
             if (listBox1.SelectedItem != null)
             {
                 string val = listBox1.SelectedItem.ToString();
-                if (DialogHelper.InputBox("Name", "Enter new name of texture:", ref val, 15) == System.Windows.Forms.DialogResult.OK)
+                if (DialogHelper.InputBox("Name", "Enter new name of texture:", ref val, 15) == DialogResult.OK)
                 {
                     if (val.Length > 0)
                     {
@@ -1461,7 +1467,6 @@ namespace HLTextureTools
                     {
                         MessageBox.Show("Texture name can't be empty!", "Texture name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
-
                 }
             }
         }
@@ -1554,7 +1559,7 @@ namespace HLTextureTools
                 while (th.IsAlive)
                 {
                     if (this.IsDisposed) Application.Exit();
-                    System.Threading.Thread.Sleep(5);
+                    Thread.Sleep(5);
                     Application.DoEvents();
                 }
                 listViewEx1.Invalidate(); listBox1.EndUpdate();
@@ -1601,7 +1606,6 @@ namespace HLTextureTools
         {
             e.Item = new ListViewItem(string.Empty, e.ItemIndex);
         }
-
 
         private void listViewEx1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1655,12 +1659,12 @@ namespace HLTextureTools
                 filesBox.SelectedIndex--;
             if (listBox1.Visible)
             {
-                this.Focus();
+                Focus();
                 listBox1.Focus();
             }
             else
             {
-                this.Focus();
+                Focus();
                 listViewEx1.Focus();
             }
             CheckControlsWays();
@@ -1669,16 +1673,18 @@ namespace HLTextureTools
         private void nextFileBtn_Click(object sender, EventArgs e)
         {
             if (filesBox.SelectedIndex < (filesBox.Items.Count - 1))
+            {
                 filesBox.SelectedIndex++;
+            }
             //this.Focus();
             if (listBox1.Visible)
             {
-                this.Focus();
+                Focus();
                 listBox1.Focus();
             }
             else
             {
-                this.Focus();
+                Focus();
                 listViewEx1.Focus();
             }
 
@@ -1687,7 +1693,7 @@ namespace HLTextureTools
 
         private void CheckControlsWays()
         {
-            prevFileBtn.Enabled = filesBox.SelectedIndex > 0 || (filesBox.SelectedIndex == -1 ? true : false);
+            prevFileBtn.Enabled = filesBox.SelectedIndex > 0 || filesBox.SelectedIndex == -1;
             nextFileBtn.Enabled = filesBox.SelectedIndex < (filesBox.Items.Count - 1);
         }
 
@@ -1711,7 +1717,7 @@ namespace HLTextureTools
 
                 DialogResult dRes = MessageBox.Show("Associate *.wad and *.spr files with this program?", "File(s) association",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dRes == System.Windows.Forms.DialogResult.Yes)
+                if (dRes == DialogResult.Yes)
                 {
                     FileAssociationInfo faiWad = new FileAssociationInfo(".wad");
                     FileAssociationInfo faiSpr = new FileAssociationInfo(".spr");
@@ -1746,11 +1752,6 @@ namespace HLTextureTools
                     OpenFile(args[1]);
                 }
             }
-        }
-
-        private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://forums.svencoop.com/showthread.php?p=488924");
         }
 
         private void x32ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1868,7 +1869,7 @@ namespace HLTextureTools
                     }
                 }
 
-                if (!autoScrollCenterPos.IsEmpty && e.Button == System.Windows.Forms.MouseButtons.Left)
+                if (!autoScrollCenterPos.IsEmpty && e.Button == MouseButtons.Left)
                 {
                     Point changePoint = new Point(e.Location.X - autoScrollCenterPos.X,
                                 e.Location.Y - autoScrollCenterPos.Y);
@@ -1906,14 +1907,14 @@ namespace HLTextureTools
 
             if (!selectingTransparent)
             {
-                if (e.Button == System.Windows.Forms.MouseButtons.Left && autoScrollCenterPos.IsEmpty)
+                if (e.Button == MouseButtons.Left && autoScrollCenterPos.IsEmpty)
                 {
                     SwitchPicBg();
                 }
             }
             else //While selecting transparent color
             {
-                if (e.Button == System.Windows.Forms.MouseButtons.Left)
+                if (e.Button == MouseButtons.Left)
                 {
                     Point p = GetPicBoxAbsolutePosition();
                     int x = e.X - p.X, y = e.Y - p.Y;
@@ -1928,7 +1929,7 @@ namespace HLTextureTools
                     ColorPalette newPal = img.Palette;
                     newPal.Entries[newPal.Entries.Length - 1] = Color.Blue;
                     UpdateImagePalette(newPal);
-                    int selectedPixelIndex = 0;
+                    int selectedPixelIndex;
                     if (currentFileType == HLFileType.Sprite)
                     {
                         try
@@ -1962,7 +1963,7 @@ namespace HLTextureTools
                     ForceRefresh(true);
                     listBox1_SelectedIndexChanged(sender, e);
                 }
-                else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                else if (e.Button == MouseButtons.Right)
                 {
                     ChangeTransparentColorMode(false);
                 }
@@ -1979,7 +1980,6 @@ namespace HLTextureTools
                 pictureBox1.Cursor = Cursors.Default;
             }
         }
-
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -2004,65 +2004,9 @@ namespace HLTextureTools
             SwitchPicBg();
         }
 
-        private void LoadDetailTexture(string originalName)
-        {
-            /*
-            if (detTextures != null && detTextures.Count > 0)
-            {
-                var foundDet = detTextures.FirstOrDefault((o) =>
-                {
-                    return (o.OriginalTextureName == originalName);
-                });
-
-                //If found
-                if (!(foundDet.Equals(default(DetailTexture))))
-                {
-                    FreeImageAPI.FREE_IMAGE_FORMAT imgFormat = FreeImageAPI.FREE_IMAGE_FORMAT.FIF_TARGA;
-                    using (Bitmap det = FreeImageAPI.FreeImage.LoadBitmap(
-                        foundDet.DetailTexturePath,
-                        FreeImageAPI.FREE_IMAGE_LOAD_FLAGS.DEFAULT,
-                        ref imgFormat))
-                    {
-                        det.Save("D:\\x.png"); 
-                        using (Graphics graphics = Graphics.FromImage(det))
-                        {
-                            using (Bitmap opacitedBmp = new Bitmap(det.Width, det.Height))
-                            {
-                                ColorMatrix colormatrix = new ColorMatrix();
-                                colormatrix.Matrix33 = 0.4f;
-                                ImageAttributes imgAttribute = new ImageAttributes();
-                                imgAttribute.SetColorMatrix(colormatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-                                graphics.DrawImage(opacitedBmp, new Rectangle(0, 0, opacitedBmp.Width, opacitedBmp.Height), 0, 0, opacitedBmp.Width, opacitedBmp.Height, GraphicsUnit.Pixel, imgAttribute);
-                                //pictureBox1.Image = opacitedBmp;
-                            }
-                        }
-                    }
-                }
-            }*/
-        }
-
-        private void loadDetailFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (openFileDialogDetail.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                string fName = openFileDialogDetail.FileName;
-                if (Path.GetFileNameWithoutExtension(fName).EndsWith("_detail"))
-                {
-                    //Valid detail file
-                    DetailTextureLoader ldr = new DetailTextureLoader();
-                    detTextures = ldr.Load(openFileDialogDetail.FileName);
-                }
-                else
-                {
-                    MessageBox.Show("Not a valid detail file!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-        }
-
         private void projectHomepageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/yuraj11/HL-Texture-Tools");
         }
-
     }
 }

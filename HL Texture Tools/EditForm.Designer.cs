@@ -29,116 +29,127 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.radioParallelOriented = new System.Windows.Forms.RadioButton();
+            this.radioOriented = new System.Windows.Forms.RadioButton();
+            this.radioParallel = new System.Windows.Forms.RadioButton();
+            this.radioFacingUpright = new System.Windows.Forms.RadioButton();
+            this.radioParallelUpright = new System.Windows.Forms.RadioButton();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.radioButton5);
-            this.groupBox1.Controls.Add(this.radioButton4);
-            this.groupBox1.Controls.Add(this.radioButton3);
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Controls.Add(this.radioParallelOriented);
+            this.groupBox1.Controls.Add(this.radioOriented);
+            this.groupBox1.Controls.Add(this.radioParallel);
+            this.groupBox1.Controls.Add(this.radioFacingUpright);
+            this.groupBox1.Controls.Add(this.radioParallelUpright);
+            this.groupBox1.Location = new System.Drawing.Point(16, 15);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(223, 158);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Size = new System.Drawing.Size(297, 194);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sprite type";
             // 
-            // radioButton5
+            // radioParallelOriented
             // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.Location = new System.Drawing.Point(26, 123);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(102, 17);
-            this.radioButton5.TabIndex = 4;
-            this.radioButton5.TabStop = true;
-            this.radioButton5.Text = "Parallel Oriented";
-            this.radioButton5.UseVisualStyleBackColor = true;
+            this.radioParallelOriented.AutoSize = true;
+            this.radioParallelOriented.Location = new System.Drawing.Point(35, 151);
+            this.radioParallelOriented.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioParallelOriented.Name = "radioParallelOriented";
+            this.radioParallelOriented.Size = new System.Drawing.Size(126, 20);
+            this.radioParallelOriented.TabIndex = 4;
+            this.radioParallelOriented.TabStop = true;
+            this.radioParallelOriented.Text = "Parallel Oriented";
+            this.radioParallelOriented.UseVisualStyleBackColor = true;
             // 
-            // radioButton4
+            // radioOriented
             // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(26, 99);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(65, 17);
-            this.radioButton4.TabIndex = 3;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "Oriented";
-            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioOriented.AutoSize = true;
+            this.radioOriented.Location = new System.Drawing.Point(35, 122);
+            this.radioOriented.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioOriented.Name = "radioOriented";
+            this.radioOriented.Size = new System.Drawing.Size(77, 20);
+            this.radioOriented.TabIndex = 3;
+            this.radioOriented.TabStop = true;
+            this.radioOriented.Text = "Oriented";
+            this.radioOriented.UseVisualStyleBackColor = true;
             // 
-            // radioButton3
+            // radioParallel
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(26, 75);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(59, 17);
-            this.radioButton3.TabIndex = 2;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "Parallel";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioParallel.AutoSize = true;
+            this.radioParallel.Location = new System.Drawing.Point(35, 92);
+            this.radioParallel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioParallel.Name = "radioParallel";
+            this.radioParallel.Size = new System.Drawing.Size(72, 20);
+            this.radioParallel.TabIndex = 2;
+            this.radioParallel.TabStop = true;
+            this.radioParallel.Text = "Parallel";
+            this.radioParallel.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // radioFacingUpright
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(26, 51);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(94, 17);
-            this.radioButton2.TabIndex = 1;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Facing Upright";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioFacingUpright.AutoSize = true;
+            this.radioFacingUpright.Location = new System.Drawing.Point(35, 63);
+            this.radioFacingUpright.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioFacingUpright.Name = "radioFacingUpright";
+            this.radioFacingUpright.Size = new System.Drawing.Size(113, 20);
+            this.radioFacingUpright.TabIndex = 1;
+            this.radioFacingUpright.TabStop = true;
+            this.radioFacingUpright.Text = "Facing Upright";
+            this.radioFacingUpright.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // radioParallelUpright
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(26, 27);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(96, 17);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Parallel Upright";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioParallelUpright.AutoSize = true;
+            this.radioParallelUpright.Location = new System.Drawing.Point(35, 33);
+            this.radioParallelUpright.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioParallelUpright.Name = "radioParallelUpright";
+            this.radioParallelUpright.Size = new System.Drawing.Size(118, 20);
+            this.radioParallelUpright.TabIndex = 0;
+            this.radioParallelUpright.TabStop = true;
+            this.radioParallelUpright.Text = "Parallel Upright";
+            this.radioParallelUpright.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnSave
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button1.Location = new System.Drawing.Point(12, 191);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Save";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnSave.Location = new System.Drawing.Point(16, 235);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(100, 28);
+            this.btnSave.TabIndex = 1;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
-            // button2
+            // btnCancel
             // 
-            this.button2.Location = new System.Drawing.Point(160, 191);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Cancel";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnCancel.Location = new System.Drawing.Point(213, 235);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(100, 28);
+            this.btnCancel.TabIndex = 2;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // EditForm
             // 
-            this.AcceptButton = this.button1;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AcceptButton = this.btnSave;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(249, 226);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(332, 278);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.groupBox1);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditForm";
@@ -155,12 +166,12 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton radioButton4;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton5;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.RadioButton radioOriented;
+        private System.Windows.Forms.RadioButton radioParallel;
+        private System.Windows.Forms.RadioButton radioFacingUpright;
+        private System.Windows.Forms.RadioButton radioParallelUpright;
+        private System.Windows.Forms.RadioButton radioParallelOriented;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

@@ -1,0 +1,29 @@
+﻿<!doctype html>
+<html lang="en">
+	<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+		* {
+			font-family: Verdana,Geneva,sans-serif; 
+		}
+
+		ul  {
+			 margin-left: 0px;
+			 padding-left: 20px;
+		}
+	</style>
+	</head>
+	<body>
+		<b>⚠️ Warnings:</b>
+		<ul>
+			<li>You must check manually if every image in sprite is divisible by 8.</li>
+			<li>HL sprites support only images with max. 256 colors, try to use 8bpp BMP files.</li>
+		</ul>
+
+		<b>💡 Tips:</b>
+		<ul>
+			<li>You can use transparent PNGs - transparent color will be automatically replaced by color defined in Settings section.</li>
+		</ul>
+	</body>
+</html>

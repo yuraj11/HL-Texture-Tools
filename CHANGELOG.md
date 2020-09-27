@@ -1,3 +1,14 @@
+1.6
+=======
+_Released 27.9.2020_
+
+- support for transparent PNGs
+- drag & drop image files support in WAD/SPR creation tools
+- UI improvements (larger fonts, improved documentation when creating sprite/wad files)
+- updated to .NET Framework 4.0 client profile
+- updated FreeImage library to 3.17 version
+- other minor improvements and bug fixes
+
 1.5
 =======
 - integrated FreeImage library for better image processing and results

@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Half-Life Texture Tools")]
-[assembly: AssemblyDescription("Simple Half-Life Data files viewer and editor (for WADs and Sprites). This software uses the FreeImage open source image library. See http://freeimage.sourceforge.net for details.")]
+[assembly: AssemblyDescription("Simple Half-Life Data files viewer and editor (for WADs and Sprites). This software uses the FreeImage open source image library. See https://freeimage.sourceforge.io/ for details.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Half-Life Texture Tools")]
-[assembly: AssemblyCopyright("Copyright © 2006-2014 Juraj Novák (Yuraj)")]
+[assembly: AssemblyCopyright("Copyright © 2006-2020 Juraj Novák (Yuraj)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.5.5.0")]
-[assembly: AssemblyFileVersion("1.5.5.0")]
+[assembly: AssemblyVersion("1.6.0.0")]
+[assembly: AssemblyFileVersion("1.6.0.0")]

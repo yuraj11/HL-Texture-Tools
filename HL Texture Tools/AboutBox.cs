@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows.Forms;
+using FreeImageAPI;
 
 namespace HLTextureTools
 {
@@ -12,11 +9,11 @@ namespace HLTextureTools
         public AboutBox()
         {
             InitializeComponent();
-            this.Text = String.Format("About {0}", AssemblyTitle);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
-            this.labelCopyright.Text = AssemblyCopyright;
-            this.textBoxDescription.Text = AssemblyDescription;
+            Text = string.Format("About {0}", AssemblyTitle);
+            labelProductName.Text = AssemblyProduct;
+            labelVersion.Text = string.Format("Version {0} (FreeImage v{1})", AssemblyVersion, FreeImage.GetVersion());
+            labelCopyright.Text = AssemblyCopyright;
+            textBoxDescription.Text = AssemblyDescription;
         }
 
         #region Assembly Attribute Accessors
@@ -99,12 +96,12 @@ namespace HLTextureTools
         }
         #endregion
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void homepageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             try
             {
                 //Open my homepage
-                System.Diagnostics.Process.Start("http://www.yuraj.ucoz.com");
+                System.Diagnostics.Process.Start("https://yuraj.ucoz.com");
             }
             catch { }
         }

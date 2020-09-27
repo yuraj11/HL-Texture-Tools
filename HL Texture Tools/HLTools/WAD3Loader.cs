@@ -1,6 +1,6 @@
 ﻿/*
   HLTools by Yuraj
-  Copyright © 2006-2014 Juraj Novák (Yuraj)
+  Copyright © 2006-2020 Juraj Novák (Yuraj)
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,24 +16,22 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 */
 
-using FreeImageAPI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using FreeImageAPI;
 
 namespace HLTools
 {
     /// <summary>
-    /// GoldSrc WAD Parser 0.7.4
+    /// GoldSrc WAD Parser 0.8
     /// Written by Yuraj.
     /// </summary>
     public class WAD3Loader
     {
-        public List<WADLump> LumpsInfo { get; private set; }
+        public List<WADLump> LumpsInfo { get; private set; } = new List<WADLump>();
         public string Filename { get; private set; }
 
         //Private members
@@ -121,14 +119,14 @@ namespace HLTools
 
             public IncludedBSPTexture(uint offset, uint size, byte[] name)
             {
-                this.Offset = offset;
-                this.Size = size;
-                this.Name = name;
+                Offset = offset;
+                Size = size;
+                Name = name;
             }
 
             public override string ToString()
             {
-                return System.Text.Encoding.ASCII.GetString(this.Name);
+                return System.Text.Encoding.ASCII.GetString(Name);
             }
         }
         /*
@@ -143,15 +141,6 @@ namespace HLTools
        }*/
 
 
-
-        /// <summary>
-        /// Default WAD3Loader constructor.
-        /// </summary>
-        public WAD3Loader()
-        {
-            LumpsInfo = new List<WADLump>();
-        }
-
         /// <summary>
         /// Load and read WAD3 file.
         /// </summary>
@@ -159,7 +148,7 @@ namespace HLTools
         /// <exception cref="HLToolsUnsupportedFile"></exception>
         public void LoadFile(string inputFile)
         {
-            this.Filename = inputFile;
+            Filename = inputFile;
 
             //Reset previous loaded data
             LumpsInfo.Clear();
@@ -169,8 +158,10 @@ namespace HLTools
             binReader = new BinaryReader(fs);
 
             //First try get header ID
-            header = new WADHeader();
-            header.Id = binReader.ReadChars(4);
+            header = new WADHeader
+            {
+                Id = binReader.ReadChars(4)
+            };
 
             string magic = new string(header.Id);
             if (magic != System.Text.Encoding.ASCII.GetString(WadHeaderId)) //if invalid WAD file
@@ -211,7 +202,7 @@ namespace HLTools
         /// <exception cref="TextureDimensionException"></exception>
         public Texture GetLumpImage(int index, bool transparent = false)
         {
-            Texture retVal = null;
+            Texture retVal;
 
             if (index > -1 && index < LumpsInfo.Count)
             {
@@ -282,10 +273,12 @@ namespace HLTools
                     Texture.TextureMipmaps mipmaps = null;
                     if (type == 0x40 || type == 0x43)
                     {
-                        mipmaps = new Texture.TextureMipmaps();
-                        mipmaps.Mipmap1 = binReader.ReadBytes((int)((width / 2) * (height / 2)));
-                        mipmaps.Mipmap2 = binReader.ReadBytes((int)((width / 4) * (height / 4)));
-                        mipmaps.Mipmap3 = binReader.ReadBytes((int)((width / 8) * (height / 8)));
+                        mipmaps = new Texture.TextureMipmaps
+                        {
+                            Mipmap1 = binReader.ReadBytes((int)((width / 2) * (height / 2))),
+                            Mipmap2 = binReader.ReadBytes((int)((width / 4) * (height / 4))),
+                            Mipmap3 = binReader.ReadBytes((int)((width / 8) * (height / 8)))
+                        };
                     }
 
                     //Padding 2-bytes
@@ -319,13 +312,15 @@ namespace HLTools
                     bmp.Palette = pal;
 
                     //Lock bitmap for pixel manipulation
-                    BitmapData bmd = bmp.LockBits(new Rectangle(0, 0, (int)width, (int)height), System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+                    BitmapData bmd = bmp.LockBits(new Rectangle(0, 0, (int)width, (int)height),ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
                     System.Runtime.InteropServices.Marshal.Copy(pixels, 0, bmd.Scan0, pixels.Length);
                     bmp.UnlockBits(bmd);
 
-                    retVal = new Texture();
-                    retVal.Image = bmp;
-                    retVal.Mipmaps = mipmaps;
+                    retVal = new Texture
+                    {
+                        Image = bmp,
+                        Mipmaps = mipmaps
+                    };
                 }
                 else
                 {
@@ -399,12 +394,14 @@ namespace HLTools
             //Iterate all lumps, insert every lump to array
             for (int i = 0; i < header.LumpCount; i++)
             {
-                WADLump lump = new WADLump();
-                lump.Offset = binReader.ReadUInt32();
-                lump.CompressedLength = binReader.ReadUInt32();
-                lump.FullLength = binReader.ReadUInt32();
-                lump.Type = binReader.ReadByte();
-                lump.Compression = binReader.ReadByte();
+                WADLump lump = new WADLump
+                {
+                    Offset = binReader.ReadUInt32(),
+                    CompressedLength = binReader.ReadUInt32(),
+                    FullLength = binReader.ReadUInt32(),
+                    Type = binReader.ReadByte(),
+                    Compression = binReader.ReadByte()
+                };
                 //Padding, 2-bytes
                 binReader.BaseStream.Seek(2, SeekOrigin.Current);
                 lump.Name = GetNullTerminatedString(binReader.ReadChars(MaxNameLength));
@@ -417,11 +414,11 @@ namespace HLTools
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             for (int i = 0; i < chars.Length; i++)
-			{
+            {
                 if (chars[i] == 0x0) break;
 
                 sb.Append(chars[i]);
-			}
+            }
             return sb.ToString();
         }
 
@@ -453,15 +450,17 @@ namespace HLTools
             }
             fs.Flush();
 
-            WADLump lumpRenamed = new WADLump();
-            lumpRenamed.CompressedLength = LumpsInfo[lumpIndex].CompressedLength;
-            lumpRenamed.Compression = LumpsInfo[lumpIndex].Compression;
-            lumpRenamed.FullLength = LumpsInfo[lumpIndex].FullLength;
-            lumpRenamed.Name = val;
-            lumpRenamed.Offset = LumpsInfo[lumpIndex].Offset;
-            lumpRenamed.Type = LumpsInfo[lumpIndex].Type;
+            WADLump lumpRenamed = new WADLump
+            {
+                CompressedLength = LumpsInfo[lumpIndex].CompressedLength,
+                Compression = LumpsInfo[lumpIndex].Compression,
+                FullLength = LumpsInfo[lumpIndex].FullLength,
+                Name = val,
+                Offset = LumpsInfo[lumpIndex].Offset,
+                Type = LumpsInfo[lumpIndex].Type
+            };
 
-            this.LumpsInfo[lumpIndex] = lumpRenamed;
+            LumpsInfo[lumpIndex] = lumpRenamed;
         }
 
         /// <summary>
@@ -633,6 +632,11 @@ namespace HLTools
             return includedTextures.Count;
         }
 
+        public static void CreateWad(string outputFilename, string[] images, string[] names, bool reserverLastPalColor = false)
+        {
+            CreateWad(outputFilename, images, names, Color.Blue, reserverLastPalColor);
+        }
+
         /// <summary>
         /// Compile input images into WAD texture file.
         /// </summary>
@@ -640,7 +644,7 @@ namespace HLTools
         /// <param name="images">Input image files.</param>
         /// <param name="names">Names of textures.</param>
         /// <param name="reserverLastPalColor">Reserve last color in palette if name starts with {.</param>
-        public static void CreateWad(string outputFilename, string[] images, string[] names, bool reserverLastPalColor = false)
+        public static void CreateWad(string outputFilename, string[] images, string[] names, Color alphaReplacementColor, bool reserverLastPalColor = false)
         {
             using (FileStream fs = new FileStream(outputFilename, FileMode.Create))
             using (BinaryWriter bw = new BinaryWriter(fs))
@@ -649,20 +653,53 @@ namespace HLTools
                 List<FreeImageBitmap> imgs = new List<FreeImageBitmap>();
                 for (int i = 0; i < images.Length; i++)
                 {
-                    string image = images[i];
-
                     //Quantize images
-                    FreeImageBitmap originalImage = FreeImageBitmap.FromFile(image);
+                    FreeImageBitmap originalImage = new FreeImageBitmap(images[i]);
 
                     //If texture will be transparent, reserve last color if enabled
                     bool reserveLastClr = (names[i].StartsWith("{") && reserverLastPalColor);
+                    bool isTransparentImage = originalImage.IsTransparent;
+                    bool is8Bpp = originalImage.BitsPerPixel == 8;
                     int r = reserveLastClr ? 1 : 0;
+
+                    if (isTransparentImage)
+                    {
+                        originalImage.SwapColors(new RGBQUAD(Color.Transparent), new RGBQUAD(alphaReplacementColor), false);
+                    }
+
                     originalImage.Quantize(FREE_IMAGE_QUANTIZE.FIQ_NNQUANT, MaxPaletteColors - r);
                     originalImage.ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_08_BPP);
 
-                    if (reserveLastClr) originalImage.Palette[MaxPaletteColors - 1] = new RGBQUAD(Color.Blue);
+                    if (reserveLastClr) {
+                        if (isTransparentImage)
+                        {
+                            bool foundReplacementColor = false;
+                            for (int pindex = 0; pindex < originalImage.Palette.Length; pindex++)
+                            {
+                                RGBQUAD rgb = originalImage.Palette.GetValue(pindex);
+                                if (rgb.rgbRed == alphaReplacementColor.R && rgb.rgbGreen == alphaReplacementColor.G && rgb.rgbBlue == alphaReplacementColor.B)
+                                {
+                                    var lastColor = originalImage.Palette.GetValue(MaxPaletteColors - 1);
+                                    originalImage.Palette[pindex] = lastColor;
+                                    originalImage.Palette[MaxPaletteColors - 1] = new RGBQUAD(alphaReplacementColor);
+                                    originalImage.SwapPaletteIndices((byte)pindex, MaxPaletteColors - 1);
+                                    foundReplacementColor = true;
+                                    break;
+                                }
+                            }
 
-                    //TODO: Transparent png, originalImage.SwapColors(, Color.Blue, true);
+                            // If didn't found replacement, set directly last alpha color
+                            if (!foundReplacementColor)
+                            {
+                                originalImage.Palette[MaxPaletteColors - 1] = new RGBQUAD(alphaReplacementColor);
+                            }
+                        }
+                        else
+                        {
+                            originalImage.Palette[MaxPaletteColors - 1] = new RGBQUAD(alphaReplacementColor);
+                        }
+                    }
+
                     imgs.Add(originalImage);
                 }
                 uint[] offsets = new uint[images.Length];
@@ -712,11 +749,12 @@ namespace HLTools
                         int widthMM = (imgs[i].Width / factor);
                         int heightMM = (imgs[i].Height / factor);
 
-
-                        using (FreeImageBitmap clBmp = imgs[i].GetScaledInstance(widthMM, heightMM, FREE_IMAGE_FILTER.FILTER_LANCZOS3))
+                        using (FreeImageBitmap clBmp = new FreeImageBitmap(imgs[i]))
                         {
-                            //TODO: opravit png, priesvitnost 
+                            //TODO: Transparent png
+                            clBmp.Rescale(widthMM, heightMM, FREE_IMAGE_FILTER.FILTER_LANCZOS3);
                             clBmp.Quantize(FREE_IMAGE_QUANTIZE.FIQ_NNQUANT, MaxPaletteColors, imgs[i].Palette);
+
                             byte[] arrMM = new byte[widthMM * heightMM];
                             System.Runtime.InteropServices.Marshal.Copy(clBmp.GetScanlinePointer(0), arrMM, 0, arrMM.Length);
                             Array.Reverse(arrMM);

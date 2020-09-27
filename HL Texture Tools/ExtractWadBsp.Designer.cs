@@ -28,131 +28,132 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.inputBspFile = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnOpenBsp = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnSaveWad = new System.Windows.Forms.Button();
+            this.inputWadFile = new System.Windows.Forms.TextBox();
+            this.btnExtract = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.label1 = new System.Windows.Forms.Label();
+            this.openBspFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveWadFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBox1
+            // inputBspFile
             // 
-            this.textBox1.Location = new System.Drawing.Point(24, 31);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(314, 20);
-            this.textBox1.TabIndex = 0;
+            this.inputBspFile.Location = new System.Drawing.Point(32, 38);
+            this.inputBspFile.Margin = new System.Windows.Forms.Padding(4);
+            this.inputBspFile.Name = "inputBspFile";
+            this.inputBspFile.Size = new System.Drawing.Size(417, 22);
+            this.inputBspFile.TabIndex = 0;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Controls.Add(this.btnOpenBsp);
+            this.groupBox1.Controls.Add(this.inputBspFile);
+            this.groupBox1.Location = new System.Drawing.Point(16, 15);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(394, 76);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox1.Size = new System.Drawing.Size(525, 94);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input *.bsp map file";
             // 
-            // button2
+            // btnOpenBsp
             // 
-            this.button2.Location = new System.Drawing.Point(344, 29);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(24, 23);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "...";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnOpenBsp.Location = new System.Drawing.Point(459, 36);
+            this.btnOpenBsp.Margin = new System.Windows.Forms.Padding(4);
+            this.btnOpenBsp.Name = "btnOpenBsp";
+            this.btnOpenBsp.Size = new System.Drawing.Size(32, 28);
+            this.btnOpenBsp.TabIndex = 1;
+            this.btnOpenBsp.Text = "...";
+            this.btnOpenBsp.UseVisualStyleBackColor = true;
+            this.btnOpenBsp.Click += new System.EventHandler(this.btnOpenBsp_Click);
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.button3);
-            this.groupBox2.Controls.Add(this.textBox2);
-            this.groupBox2.Location = new System.Drawing.Point(12, 94);
+            this.groupBox2.Controls.Add(this.btnSaveWad);
+            this.groupBox2.Controls.Add(this.inputWadFile);
+            this.groupBox2.Location = new System.Drawing.Point(16, 116);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(394, 76);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox2.Size = new System.Drawing.Size(525, 94);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Output *.wad file to save";
             // 
-            // button3
+            // btnSaveWad
             // 
-            this.button3.Location = new System.Drawing.Point(344, 28);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(24, 23);
-            this.button3.TabIndex = 1;
-            this.button3.Text = "...";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.btnSaveWad.Location = new System.Drawing.Point(459, 34);
+            this.btnSaveWad.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSaveWad.Name = "btnSaveWad";
+            this.btnSaveWad.Size = new System.Drawing.Size(32, 28);
+            this.btnSaveWad.TabIndex = 1;
+            this.btnSaveWad.Text = "...";
+            this.btnSaveWad.UseVisualStyleBackColor = true;
+            this.btnSaveWad.Click += new System.EventHandler(this.btnSaveWad_Click);
             // 
-            // textBox2
+            // inputWadFile
             // 
-            this.textBox2.Location = new System.Drawing.Point(24, 31);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(314, 20);
-            this.textBox2.TabIndex = 1;
+            this.inputWadFile.Location = new System.Drawing.Point(32, 38);
+            this.inputWadFile.Margin = new System.Windows.Forms.Padding(4);
+            this.inputWadFile.Name = "inputWadFile";
+            this.inputWadFile.Size = new System.Drawing.Size(417, 22);
+            this.inputWadFile.TabIndex = 1;
             // 
-            // button1
+            // btnExtract
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button1.Location = new System.Drawing.Point(331, 187);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 38);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Extract";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnExtract.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnExtract.Location = new System.Drawing.Point(441, 230);
+            this.btnExtract.Margin = new System.Windows.Forms.Padding(4);
+            this.btnExtract.Name = "btnExtract";
+            this.btnExtract.Size = new System.Drawing.Size(100, 47);
+            this.btnExtract.TabIndex = 2;
+            this.btnExtract.Text = "Extract";
+            this.btnExtract.UseVisualStyleBackColor = true;
+            this.btnExtract.Click += new System.EventHandler(this.btnExtract_Click);
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 195);
+            this.progressBar1.Location = new System.Drawing.Point(16, 240);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(313, 25);
+            this.progressBar1.Size = new System.Drawing.Size(417, 31);
             this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.progressBar1.TabIndex = 3;
             this.progressBar1.Visible = false;
             // 
-            // openFileDialog1
+            // openBspFileDialog
             // 
-            this.openFileDialog1.Filter = "BSP Map File (*.bsp)|*.bsp";
+            this.openBspFileDialog.Filter = "BSP Map File (*.bsp)|*.bsp";
             // 
-            // saveFileDialog1
+            // saveWadFileDialog
             // 
-            this.saveFileDialog1.Filter = "HL WAD Texture (*.wad)|*.wad";
+            this.saveWadFileDialog.Filter = "HL WAD Texture (*.wad)|*.wad";
             // 
-            // backgroundWorker1
+            // backgroundWorker
             // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 177);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(240, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "This feature is almost finished, but still some bugs.";
+            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
             // ExtractWadBsp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(418, 237);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(557, 292);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnExtract);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ExtractWadBsp";
@@ -164,23 +165,21 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox inputBspFile;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox inputWadFile;
+        private System.Windows.Forms.Button btnExtract;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnOpenBsp;
+        private System.Windows.Forms.Button btnSaveWad;
+        private System.Windows.Forms.OpenFileDialog openBspFileDialog;
+        private System.Windows.Forms.SaveFileDialog saveWadFileDialog;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
     }
 }

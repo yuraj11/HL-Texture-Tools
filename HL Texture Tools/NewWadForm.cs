@@ -1,97 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using HLTools;
 using System.Threading;
 using System.IO;
+using FreeImageAPI;
 
 namespace HLTextureTools
 {
     public partial class NewWadForm : Form
     {
-        public delegate void OpenFileDelegate(string filename);
-        private OpenFileDelegate openFileNow;
-
-        private class ListViewIndexComparer : System.Collections.IComparer
-        {
-
-            public int Compare(object x, object y)
-            {
-                return ((ListViewItem)x).Index - ((ListViewItem)y).Index;
-            }
-        }
-
-        public NewWadForm()
-        {
-            InitializeComponent();
-            listPictures.ListViewItemSorter = new ListViewIndexComparer();
-        }
+        private readonly OpenFileDelegate openFileNow;
 
         public NewWadForm(OpenFileDelegate openFile)
         {
             openFileNow = openFile;
             InitializeComponent();
+
             listPictures.ListViewItemSorter = new ListViewIndexComparer();
+            helpBrowser.DocumentText = Properties.Resources.wad_help_text;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnAddImages_Click(object sender, EventArgs e)
         {
             //Import images
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (addImagesFileDialog.ShowDialog() == DialogResult.OK)
             {
-                listPictures.Visible = false;
-                listPictures.BeginUpdate();
-                ListViewItem[] items = new ListViewItem[openFileDialog1.FileNames.Length];
-                int w, h = 0;
-                for (int i = 0; i < items.Length; i++)
-                {
-                    items[i] = new ListViewItem();
-                    using (Image origImage = Image.FromFile(openFileDialog1.FileNames[i]))
-                    {
-                        w = origImage.Width;
-                        h = origImage.Height;
-                        imageList1.Images.Add(origImage.GetThumbnailImage(72, 72, null, IntPtr.Zero));
-                    }
-                    string itemName = Path.GetFileNameWithoutExtension(openFileDialog1.FileNames[i]);
-                    if (itemName.Length > 16)
-                        itemName = itemName.Substring(0, 16);
-
-                    items[i].Text = itemName;
-                    items[i].SubItems.Add(string.Format("{0}x{1}", w, h));
-                    if ((w % 8) != 0 || (h % 8) != 0)
-                    {
-                        items[i].SubItems.Add(string.Format("ERROR: Not divisible by 8!", w, h));
-                    }
-                    else
-                    {
-                        items[i].SubItems.Add("OK");
-                    }
-                    
-                    items[i].ImageIndex = imageList1.Images.Count - 1;
-                    items[i].Tag = openFileDialog1.FileNames[i];
-                    listPictures.Items.Add(items[i]);
-                    //Application.DoEvents();
-                }
-                listPictures.EndUpdate();
-                listPictures.Visible = true;
+                AddFiles(addImagesFileDialog.FileNames);
             }
         }
 
+        private ListViewItem CreateImageListItem(string filename)
+        {
+            ListViewItem item = new ListViewItem();
+            int w, h = 0;
+            bool hasTrasparentColor = false;
+            using (Image origImage = Image.FromFile(filename))
+            using (FreeImageBitmap freeImage = new FreeImageBitmap(origImage))
+            {
+                hasTrasparentColor = freeImage.IsTransparent;
+                w = origImage.Width;
+                h = origImage.Height;
+                imageList1.Images.Add(origImage.GetThumbnailImage(72, 72, null, IntPtr.Zero));
+            }
+            string itemName = Path.GetFileNameWithoutExtension(filename);
+            if (hasTrasparentColor)
+            {
+                itemName = "{" + itemName;
+            }
+            if (itemName.Length > 16)
+            {
+                itemName = itemName.Substring(0, 16);
+            }
 
-        private void button2_Click(object sender, EventArgs e)
+            item.Text = itemName;
+            item.SubItems.Add(string.Format("{0}x{1}", w, h));
+            if ((w % 8) != 0 || (h % 8) != 0)
+            {
+                item.SubItems.Add(string.Format("ERROR: Not divisible by 8!", w, h));
+            }
+            else
+            {
+                item.SubItems.Add("OK");
+            }
+
+            item.ImageIndex = imageList1.Images.Count - 1;
+            item.Tag = filename;
+
+            return item;
+        }
+
+        private void btnRemoveImages_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in listPictures.SelectedItems)
             {
                 listPictures.Items.Remove(item);
             }
-            
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnMoveImageUp_Click(object sender, EventArgs e)
         {
             //Move up
             ListViewItem a = listPictures.SelectedItems[0];
@@ -107,7 +94,7 @@ namespace HLTextureTools
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void btnMoveImageDown_Click(object sender, EventArgs e)
         {
             //Move down
             ListViewItem a = listPictures.SelectedItems[0];
@@ -124,42 +111,44 @@ namespace HLTextureTools
             }
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void btnSaveWad_Click(object sender, EventArgs e)
         {
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveWadFileDialog.ShowDialog() == DialogResult.OK)
             {
                 progBar.Show();
                 progLbl.Show();
-                button5.Enabled = false;
+                btnSaveWad.Enabled = false;
                 tabControl1.Enabled = false;
                 try
                 {
-                    string[] names;
-                    string[] fNames;
-                    GetInputFilenames(out names, out fNames);
+                    string savePath = saveWadFileDialog.FileName;
+                    Color transparentColorReplacement = panelPickTransparentColor.BackColor;
+                    bool reserveLastColor = checkBox1.Checked;
+                    GetInputFilenames(out string[] names, out string[] fNames);
+
                     Thread thCreator = new Thread((o) =>
                     {
-                        WAD3Loader.CreateWad(saveFileDialog1.FileName, fNames, names, checkBox1.Checked);
+                        WAD3Loader.CreateWad(savePath, fNames, names, transparentColorReplacement, reserveLastColor);
                     });
                     thCreator.Start();
 
                     while (thCreator.IsAlive)
                     {
-                        System.Threading.Thread.Sleep(10);
+                        Thread.Sleep(10);
                         Application.DoEvents();
                     }
 
+                    progBar.Hide();
+                    progLbl.Hide();
+
                     if (MessageBox.Show("Wad file created! Open it now in viewer?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == System.Windows.Forms.DialogResult.Yes)
                     {
-                        if (openFileNow != null)
-                            openFileNow(saveFileDialog1.FileName);
+                        openFileNow(saveWadFileDialog.FileName);
                     }
                 }
                 finally
                 {
-                    progBar.Hide();
-                    progLbl.Hide();
-                    this.Close();
+                    Close();
                 }
             }
         }
@@ -177,27 +166,25 @@ namespace HLTextureTools
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedIndex == 1)
+            if (tabControl1.SelectedIndex == 2)
             {
-                button5.Enabled = listPictures.Items.Count > 0;
+                btnSaveWad.Enabled = listPictures.Items.Count > 0;
             }
         }
-
 
         private void listPictures_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listPictures.SelectedItems.Count > 0)
             {
-                button2.Enabled = true;
-                button3.Enabled = listPictures.SelectedItems[0].Index > 0;
-                button4.Enabled = listPictures.SelectedItems[0].Index < (listPictures.Items.Count - 1);
+                btnRemoveImages.Enabled = true;
+                btnMoveImageUp.Enabled = listPictures.SelectedItems[0].Index > 0;
+                btnMoveImageDown.Enabled = listPictures.SelectedItems[0].Index < (listPictures.Items.Count - 1);
             }
             else
             {
-                button2.Enabled = false;
-                button3.Enabled = button4.Enabled = false;
+                btnRemoveImages.Enabled = false;
+                btnMoveImageUp.Enabled = btnMoveImageDown.Enabled = false;
             }
-            
         }
 
         private void listPictures_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -215,8 +202,9 @@ namespace HLTextureTools
         {
             if (e.KeyCode == Keys.Delete)
             {
-                button2.PerformClick();
-            } else if (e.Control == true && e.KeyCode == Keys.A)
+                btnRemoveImages.PerformClick();
+            }
+            else if (e.Control == true && e.KeyCode == Keys.A)
             {
                 foreach (ListViewItem item in listPictures.Items)
                 {
@@ -251,12 +239,57 @@ namespace HLTextureTools
             }
         }
 
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        protected override void OnDragEnter(DragEventArgs e)
         {
-            nMaxWidth.Enabled = nMaxHeight.Enabled = checkBox2.Checked;
+            base.OnDragEnter(e);
+
+            //Enabled file drop
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.All;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
         }
 
+        protected override void OnDragDrop(DragEventArgs e)
+        {
+            base.OnDragDrop(e);
 
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            AddFiles(files);
+        }
 
+        private void AddFiles(string[] filenames)
+        {
+            try
+            {
+                listPictures.Visible = false;
+                listPictures.BeginUpdate();
+                foreach (string path in filenames)
+                {
+                    listPictures.Items.Add(CreateImageListItem(path));
+                }
+                listPictures.EndUpdate();
+            }
+            catch
+            {
+                MessageBox.Show("Could not open file!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                listPictures.Visible = true;
+            }
+        }
+
+        private void panelPickTransparentColor_Click(object sender, EventArgs e)
+        {
+            if (colorPicker.ShowDialog() == DialogResult.OK)
+            {
+                panelPickTransparentColor.BackColor = colorPicker.Color;
+            }
+        }
     }
 }

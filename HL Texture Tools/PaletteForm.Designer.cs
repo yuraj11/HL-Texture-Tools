@@ -54,28 +54,31 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(51, 308);
+            this.textBox1.Location = new System.Drawing.Point(68, 379);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(251, 20);
+            this.textBox1.Size = new System.Drawing.Size(302, 22);
             this.textBox1.TabIndex = 1;
             this.textBox1.TabStop = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 311);
+            this.label1.Location = new System.Drawing.Point(16, 383);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 13);
+            this.label1.Size = new System.Drawing.Size(40, 16);
             this.label1.TabIndex = 2;
             this.label1.Text = "RGB:";
             // 
             // label2
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label2.Location = new System.Drawing.Point(12, 337);
+            this.label2.Location = new System.Drawing.Point(16, 415);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(188, 29);
+            this.label2.Size = new System.Drawing.Size(233, 36);
             this.label2.TabIndex = 3;
             this.label2.Text = "Left click - copy rgb color to clipboard\r\nRight click - edit color";
             // 
@@ -86,9 +89,10 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(206, 337);
+            this.linkLabel1.Location = new System.Drawing.Point(259, 413);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(81, 13);
+            this.linkLabel1.Size = new System.Drawing.Size(99, 16);
             this.linkLabel1.TabIndex = 4;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Export palette...";
@@ -97,9 +101,10 @@
             // linkLabel2
             // 
             this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(206, 353);
+            this.linkLabel2.Location = new System.Drawing.Point(259, 432);
+            this.linkLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(80, 13);
+            this.linkLabel2.Size = new System.Drawing.Size(98, 16);
             this.linkLabel2.TabIndex = 5;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "Import palette...";
@@ -117,9 +122,10 @@
             // 
             this.linkLabel3.AutoSize = true;
             this.linkLabel3.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.linkLabel3.Location = new System.Drawing.Point(206, 416);
+            this.linkLabel3.Location = new System.Drawing.Point(259, 510);
+            this.linkLabel3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel3.Name = "linkLabel3";
-            this.linkLabel3.Size = new System.Drawing.Size(88, 13);
+            this.linkLabel3.Size = new System.Drawing.Size(111, 16);
             this.linkLabel3.TabIndex = 6;
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "Restore changes";
@@ -128,9 +134,10 @@
             // linkLabel4
             // 
             this.linkLabel4.AutoSize = true;
-            this.linkLabel4.Location = new System.Drawing.Point(206, 369);
+            this.linkLabel4.Location = new System.Drawing.Point(259, 452);
+            this.linkLabel4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel4.Name = "linkLabel4";
-            this.linkLabel4.Size = new System.Drawing.Size(67, 13);
+            this.linkLabel4.Size = new System.Drawing.Size(83, 16);
             this.linkLabel4.TabIndex = 8;
             this.linkLabel4.TabStop = true;
             this.linkLabel4.Text = "Fill with color";
@@ -138,20 +145,22 @@
             // 
             // button1
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button1.Location = new System.Drawing.Point(12, 401);
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.button1.Location = new System.Drawing.Point(16, 494);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(110, 28);
             this.button1.TabIndex = 9;
-            this.button1.Text = "Save!";
+            this.button1.Text = "Save";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(112, 401);
+            this.button2.Location = new System.Drawing.Point(139, 494);
+            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(110, 28);
             this.button2.TabIndex = 10;
             this.button2.Text = "Cancel";
             this.button2.UseVisualStyleBackColor = true;
@@ -160,9 +169,10 @@
             // linkLabel5
             // 
             this.linkLabel5.AutoSize = true;
-            this.linkLabel5.Location = new System.Drawing.Point(206, 385);
+            this.linkLabel5.Location = new System.Drawing.Point(259, 472);
+            this.linkLabel5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel5.Name = "linkLabel5";
-            this.linkLabel5.Size = new System.Drawing.Size(54, 13);
+            this.linkLabel5.Size = new System.Drawing.Size(70, 16);
             this.linkLabel5.TabIndex = 8;
             this.linkLabel5.TabStop = true;
             this.linkLabel5.Text = "Grayscale";
@@ -173,9 +183,10 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(12, 368);
+            this.checkBox1.Location = new System.Drawing.Point(16, 453);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(115, 17);
+            this.checkBox1.Size = new System.Drawing.Size(140, 20);
             this.checkBox1.TabIndex = 11;
             this.checkBox1.Text = "Backup original file";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -185,9 +196,10 @@
             this.pictureBox1.BackColor = System.Drawing.Color.Blue;
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.pictureBox1.Location = new System.Drawing.Point(19, 17);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(290, 290);
+            this.pictureBox1.Size = new System.Drawing.Size(354, 354);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -197,9 +209,10 @@
             // linkLabel6
             // 
             this.linkLabel6.AutoSize = true;
-            this.linkLabel6.Location = new System.Drawing.Point(261, 385);
+            this.linkLabel6.Location = new System.Drawing.Point(332, 472);
+            this.linkLabel6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel6.Name = "linkLabel6";
-            this.linkLabel6.Size = new System.Drawing.Size(40, 13);
+            this.linkLabel6.Size = new System.Drawing.Size(51, 16);
             this.linkLabel6.TabIndex = 12;
             this.linkLabel6.TabStop = true;
             this.linkLabel6.Text = "Sepia+";
@@ -208,9 +221,10 @@
             // linkLabel7
             // 
             this.linkLabel7.AutoSize = true;
-            this.linkLabel7.Location = new System.Drawing.Point(206, 400);
+            this.linkLabel7.Location = new System.Drawing.Point(259, 490);
+            this.linkLabel7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel7.Name = "linkLabel7";
-            this.linkLabel7.Size = new System.Drawing.Size(34, 13);
+            this.linkLabel7.Size = new System.Drawing.Size(40, 16);
             this.linkLabel7.TabIndex = 13;
             this.linkLabel7.TabStop = true;
             this.linkLabel7.Text = "Invert";
@@ -219,9 +233,10 @@
             // linkLabel8
             // 
             this.linkLabel8.AutoSize = true;
-            this.linkLabel8.Location = new System.Drawing.Point(260, 400);
+            this.linkLabel8.Location = new System.Drawing.Point(331, 490);
+            this.linkLabel8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel8.Name = "linkLabel8";
-            this.linkLabel8.Size = new System.Drawing.Size(20, 13);
+            this.linkLabel8.Size = new System.Drawing.Size(24, 16);
             this.linkLabel8.TabIndex = 14;
             this.linkLabel8.TabStop = true;
             this.linkLabel8.Text = "B+";
@@ -231,9 +246,10 @@
             // linkLabel9
             // 
             this.linkLabel9.AutoSize = true;
-            this.linkLabel9.Location = new System.Drawing.Point(281, 400);
+            this.linkLabel9.Location = new System.Drawing.Point(359, 490);
+            this.linkLabel9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel9.Name = "linkLabel9";
-            this.linkLabel9.Size = new System.Drawing.Size(20, 13);
+            this.linkLabel9.Size = new System.Drawing.Size(24, 16);
             this.linkLabel9.TabIndex = 15;
             this.linkLabel9.TabStop = true;
             this.linkLabel9.Text = "B- ";
@@ -242,9 +258,9 @@
             // 
             // PaletteForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(318, 435);
+            this.ClientSize = new System.Drawing.Size(390, 535);
             this.Controls.Add(this.linkLabel9);
             this.Controls.Add(this.linkLabel8);
             this.Controls.Add(this.linkLabel7);
@@ -262,7 +278,9 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.pictureBox1);
             this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PaletteForm";

@@ -10,11 +10,11 @@ namespace HLTextureTools
     {
         private const string VheRegistryPath = @"Software\Valve\Valve Hammer Editor\General";
         private const string TextureFileCount = "TextureFileCount";
-        private RegistryKey regKey;
+        private readonly RegistryKey regKey;
 
         public VheWadManager()
         {
-            this.regKey = Registry.CurrentUser.OpenSubKey(VheRegistryPath, true);
+            regKey = Registry.CurrentUser.OpenSubKey(VheRegistryPath, true);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace HLTextureTools
 
         public void Dispose()
         {
-            this.regKey.Close();
+            regKey.Close();
         }
 
         /// <summary>
