@@ -5,11 +5,11 @@ Half-Life Texture Tools
 
 Half-Life 1 (and mods like SC, CS etc.) data files tool - view and edit WADs and Sprite files. You can also extract images to many formats (png, jpg, bmp, gif, tiff). Drag and Drop files is supported.
 
-You will need .NET Framework 4.0+ to run this application.
+You will need .NET Framework 4.8+ to run this application.
 
 *This software uses the FreeImage open source image library. See http://freeimage.sourceforge.net for details.*
 
-Current version: **1.6.0** ([changelog](CHANGELOG.md))
+Current version: **1.6.1** ([changelog](CHANGELOG.md))
 
 #### Download latest Windows version (binary) [here](https://github.com/yuraj11/HL-Texture-Tools/releases).
 
