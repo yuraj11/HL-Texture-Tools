@@ -19,6 +19,7 @@ namespace HLTextureTools
             InitializeComponent();
             VheManager.currentWad = currentWad;
             openFileNow = openFileDelegate;
+            listTextures.ItemHeight = (int)((listTextures.Font.Height + 1) * (DeviceDpi / 96.0f));
         }
 
         public static void NewWadInViewer(string filename)

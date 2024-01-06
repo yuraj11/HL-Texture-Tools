@@ -10,7 +10,7 @@
 
 		ul  {
 			 margin-left: 0px;
-			 padding-left: 20px;
+			 padding-left: 2em;
 		}
 	</style>
 	</head>

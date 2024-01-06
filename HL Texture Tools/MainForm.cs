@@ -1,4 +1,5 @@
 ﻿using BrendanGrant.Helpers.FileAssociation;
+using HLTextureTools.UIControls;
 using HLTools;
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,7 @@ namespace HLTextureTools
             colorDialog.Color = panel1.BackColor;
             //Set thumbnails spacing
             ListViewTools.SetSpacing(listViewEx1, 74, 74);
+            listBox1.ItemHeight = (int)((listBox1.Font.Height + 1) * (DeviceDpi / 96.0f));
 
             //Refersh setting
             RefreshSettings();
@@ -1448,13 +1450,15 @@ namespace HLTextureTools
             if (listBox1.SelectedItem != null)
             {
                 string val = listBox1.SelectedItem.ToString();
-                if (DialogHelper.InputBox("Name", "Enter new name of texture:", ref val, 15) == DialogResult.OK)
+                InputDialog inputDialog = new InputDialog("Name", "Enter new name of texture:", val, 15);
+                if (inputDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (val.Length > 0)
+                    string newName = inputDialog.ReturnValue;
+                    if (newName.Length > 0)
                     {
-                        wadLoader.ChangeTextureName(listBox1.SelectedIndex, val);
+                        wadLoader.ChangeTextureName(listBox1.SelectedIndex, newName);
                         WAD3Loader.WADLump lumpInfo = (WAD3Loader.WADLump)listBox1.SelectedItem;
-                        lumpInfo.Name = val;
+                        lumpInfo.Name = newName;
                         listBox1.Items[listBox1.SelectedIndex] = lumpInfo;
 
                         //Update thumbnail name if needed
@@ -1491,8 +1495,6 @@ namespace HLTextureTools
                     listViewEx1.Items[listBox1.SelectedIndex].EnsureVisible();
                 }
                 listViewEx1.Focus();
-                //textBox1.Enabled = false;
-                //listViewEx1.EnsureVisible(listBox1.SelectedIndex);
 
             }
             else
@@ -1500,7 +1502,6 @@ namespace HLTextureTools
                 tlCache.Images.Clear();
                 listViewEx1.Visible = false;
                 listBox1.Visible = true;
-                //textBox1.Enabled = true;
             }
         }
 

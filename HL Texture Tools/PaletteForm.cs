@@ -15,8 +15,8 @@ namespace HLTextureTools
         public static ColorPalette palette = null;
         public static bool backup = false;
         private Color[] originalColorsPalette = null;
-        private const int ColorItemSize = 22;
-        private const int MaxItemsRow = 16;
+        private int ColorItemSize = 22;
+        private int MaxItemsRow = 16;
         private bool isTransparentTexture = false;
 
         //current color under mouse
@@ -29,6 +29,9 @@ namespace HLTextureTools
         public PaletteForm(bool isTransparent, string name, ColorPalette colPal, UpdatePaletteDelegate palDelegate)
         {
             InitializeComponent();
+
+            float dpiScale = DeviceDpi / 96.0f;
+            ColorItemSize = (int)(ColorItemSize * dpiScale);
 
             isTransparentTexture = isTransparent;
             Text += name;
@@ -146,64 +149,6 @@ namespace HLTextureTools
             pictureBox1.Invalidate();
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                using (StreamWriter sw = new StreamWriter(saveFileDialog.FileName, false))
-                {
-                    sw.WriteLine("JASC-PAL");
-                    sw.WriteLine("0100");
-                    sw.WriteLine("256");
-                    for (int i = 0; i < palette.Entries.Length; i++)
-                    {
-                        sw.WriteLine(string.Format("{0} {1} {2}", palette.Entries[i].R, palette.Entries[i].G, palette.Entries[i].B));
-                    }
-                }
-            }
-        }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                //Try parse palette file
-                try
-                {
-                    using (StreamReader sw = new StreamReader(openFileDialog.FileName))
-                    {
-                        if (sw.ReadLine() == "JASC-PAL") //Pal Identifier
-                        {
-                            string version = sw.ReadLine(); //pal version
-                            string count = sw.ReadLine(); //pal colors count
-
-                            for (int i = 0; i < palette.Entries.Length; i++) //read every palette color
-                            {
-                                string line = sw.ReadLine();
-                                string[] clrs = line.Split(' ');
-                                if (clrs.Length >= 3)
-                                {
-                                    palette.Entries[i] = Color.FromArgb(byte.Parse(clrs[0]), byte.Parse(clrs[1]), byte.Parse(clrs[2]));
-                                }
-                            }
-
-                            pictureBox1.Invalidate();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Unknown file type!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-
-                    }
-                    updatePalette(palette);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
         private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             //Reset color palette to previous original state
@@ -247,33 +192,6 @@ namespace HLTextureTools
             }
         }
 
-        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (palColorSelect.ShowDialog() == DialogResult.OK)
-            {
-
-                for (int i = 0; i < palette.Entries.Length; i++)
-                {
-                    palette.Entries[i] = palColorSelect.Color;
-
-                }
-                pictureBox1.Invalidate();
-                updatePalette(palette);
-            }
-        }
-
-        private void linkLabel5_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            //Grayscale
-            for (int i = 0; i < GetPaletteLength(); i++)
-            {
-                int gray = (int)((palette.Entries[i].R * .3) + (palette.Entries[i].G * .59) + (palette.Entries[i].B * .11));
-                palette.Entries[i] = Color.FromArgb(gray, gray, gray);
-            }
-            pictureBox1.Invalidate();
-            updatePalette(palette);
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
             if (IsChangedPalette())
@@ -299,7 +217,102 @@ namespace HLTextureTools
             Close();
         }
 
-        private void linkLabel6_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private int GetPaletteLength()
+        {
+            return palette.Entries.Length + (isTransparentTexture ? -1 : 0);
+        }
+
+        private void toolStripButtonExport_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter sw = new StreamWriter(saveFileDialog.FileName, false))
+                {
+                    sw.WriteLine("JASC-PAL");
+                    sw.WriteLine("0100");
+                    sw.WriteLine("256");
+                    for (int i = 0; i < palette.Entries.Length; i++)
+                    {
+                        sw.WriteLine(string.Format("{0} {1} {2}", palette.Entries[i].R, palette.Entries[i].G, palette.Entries[i].B));
+                    }
+                }
+            }
+        }
+
+        private void toolStripButtonImport_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                //Try parse palette file
+                try
+                {
+                    using (StreamReader sw = new StreamReader(openFileDialog.FileName))
+                    {
+                        if (sw.ReadLine() == "JASC-PAL") //Pal Identifier
+                        {
+                            string version = sw.ReadLine(); //pal version
+                            string count = sw.ReadLine(); //pal colors count
+
+                            for (int i = 0; i < palette.Entries.Length; i++) //read every palette color
+                            {
+                                string line = sw.ReadLine();
+                                string[] clrs = line.Split(' ');
+                                if (clrs.Length >= 3)
+                                {
+                                    palette.Entries[i] = Color.FromArgb(byte.Parse(clrs[0]), byte.Parse(clrs[1]), byte.Parse(clrs[2]));
+                                }
+                            }
+
+                            pictureBox1.Invalidate();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Unknown file type!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+
+                    }
+                    updatePalette(palette);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            if (palColorSelect.ShowDialog() == DialogResult.OK)
+            {
+
+                for (int i = 0; i < palette.Entries.Length; i++)
+                {
+                    palette.Entries[i] = palColorSelect.Color;
+
+                }
+                pictureBox1.Invalidate();
+                updatePalette(palette);
+            }
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            //Invert
+            byte r, g, b;
+            for (int i = 0; i < GetPaletteLength(); i++)
+            {
+                r = palette.Entries[i].R;
+                g = palette.Entries[i].G;
+                b = palette.Entries[i].B;
+
+                palette.Entries[i] = Color.FromArgb(255 - r, 255 - g, 255 - b);
+            }
+
+            pictureBox1.Invalidate();
+            updatePalette(palette);
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
         {
             //Sepia
             byte r, g, b;
@@ -321,46 +334,19 @@ namespace HLTextureTools
             updatePalette(palette);
         }
 
-        private void linkLabel7_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void toolStripButton3_Click(object sender, EventArgs e)
         {
-            //Invert
-            byte r, g, b;
+            //Grayscale
             for (int i = 0; i < GetPaletteLength(); i++)
             {
-                r = palette.Entries[i].R;
-                g = palette.Entries[i].G;
-                b = palette.Entries[i].B;
-
-                palette.Entries[i] = Color.FromArgb(255 - r, 255 - g, 255 - b);
+                int gray = (int)((palette.Entries[i].R * .3) + (palette.Entries[i].G * .59) + (palette.Entries[i].B * .11));
+                palette.Entries[i] = Color.FromArgb(gray, gray, gray);
             }
-
             pictureBox1.Invalidate();
             updatePalette(palette);
         }
 
-        private int GetPaletteLength()
-        {
-            return palette.Entries.Length + (isTransparentTexture ? -1 : 0);
-        }
-
-        private void linkLabel8_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            //Brighthness +
-            int r, g, b;
-            for (int i = 0; i < GetPaletteLength(); i++)
-            {
-                r = palette.Entries[i].R + 10;
-                g = palette.Entries[i].G + 10;
-                b = palette.Entries[i].B + 10;
-
-                palette.Entries[i] = Color.FromArgb(Math.Min(r, 255), Math.Min(g, 255), Math.Min(b, 255));
-            }
-
-            pictureBox1.Invalidate();
-            updatePalette(palette);
-        }
-
-        private void linkLabel9_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void toolStripButton2_Click(object sender, EventArgs e)
         {
             //Brighthness -
             int r, g, b;
@@ -371,6 +357,23 @@ namespace HLTextureTools
                 b = palette.Entries[i].B - 10;
 
                 palette.Entries[i] = Color.FromArgb(Math.Max(r, 0), Math.Max(g, 0), Math.Max(b, 0));
+            }
+
+            pictureBox1.Invalidate();
+            updatePalette(palette);
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            //Brighthness +
+            int r, g, b;
+            for (int i = 0; i < GetPaletteLength(); i++)
+            {
+                r = palette.Entries[i].R + 10;
+                g = palette.Entries[i].G + 10;
+                b = palette.Entries[i].B + 10;
+
+                palette.Entries[i] = Color.FromArgb(Math.Min(r, 255), Math.Min(g, 255), Math.Min(b, 255));
             }
 
             pictureBox1.Invalidate();

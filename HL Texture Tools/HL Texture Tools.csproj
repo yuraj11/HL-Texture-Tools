@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,9 +10,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HLTextureTools</RootNamespace>
     <AssemblyName>HLTextureTools</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -39,6 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -49,9 +51,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FileAssociation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -99,6 +105,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="UIControls\InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UIControls\InputDialog.Designer.cs">
+      <DependentUpon>InputDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\UAC.cs" />
     <Compile Include="Utils\UIHelper.cs" />
     <Compile Include="VheManager.cs">
@@ -123,7 +135,6 @@
     <Compile Include="EditForm.Designer.cs">
       <DependentUpon>EditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UIControls\InputBox.cs" />
     <Compile Include="UIControls\ListBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -178,11 +189,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PaletteForm.resx">
       <DependentUpon>PaletteForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIControls\InputDialog.resx">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VheManager.resx">
       <DependentUpon>VheManager.cs</DependentUpon>
@@ -190,45 +205,39 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\control_stop_blue.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\control_play_blue.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Resources\zoom_out.png" />
+    <None Include="Resources\zoom_in.png" />
+    <None Include="Resources\shape_rotate_clockwise.png" />
+    <None Include="Resources\shape_rotate_anticlockwise.png" />
+    <None Include="Resources\resultset_previous.png" />
+    <None Include="Resources\resultset_next.png" />
     <None Include="Resources\picture_save.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder_picture.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Resources\palette.png" />
     <None Include="Resources\page_copy.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\texture_tools_about.png" />
     <None Include="Resources\sprite_help_text.txt" />
     <None Include="Resources\wad_help_text.txt" />
-    <None Include="Resources\resultset_next.png" />
-    <None Include="Resources\resultset_previous.png" />
+    <None Include="Resources\application_view_tile.png" />
+    <None Include="Resources\avail_sprays1.png" />
+    <None Include="Resources\control_play_blue.png" />
+    <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\add.png" />
     <None Include="Resources\delete.png" />
-    <None Include="Resources\arrow_up.png" />
     <None Include="Resources\arrow_down.png" />
-    <None Include="Resources\application_view_tile.png" />
-    <None Include="Resources\avail_sprays.png" />
-    <None Include="Resources\avail_sprays1.png" />
+    <None Include="Resources\arrow_up.png" />
+    <None Include="Resources\folder_export.png" />
+    <None Include="Resources\folder_import.png" />
     <None Include="Resources\11.png" />
+    <None Include="Resources\folder_picture.png" />
     <Content Include="Resources\icon.ico" />
-    <None Include="Resources\zoom_out.png" />
-    <None Include="Resources\zoom_in.png" />
-    <None Include="Resources\palette.png" />
-    <None Include="Resources\shape_rotate_clockwise.png" />
-    <None Include="Resources\shape_rotate_anticlockwise.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

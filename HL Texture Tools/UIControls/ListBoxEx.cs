@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace HLTextureTools
@@ -12,6 +13,7 @@ namespace HLTextureTools
             base.SetStyle(ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true);
             backBrush = new SolidBrush(BackColor);
         }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             Region region = new Region(e.ClipRectangle);
@@ -36,6 +38,29 @@ namespace HLTextureTools
                 }
             }
             base.OnPaint(e);
+        }
+
+        protected override void OnSelectedIndexChanged(EventArgs e)
+        {
+            base.OnSelectedIndexChanged(e);
+            // Must refresh UI because on higher DPI font changes to smaller size in specific cases
+            Refresh();
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            Refresh();
+
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                Refresh();
+            }
         }
     }
 }
