@@ -26,7 +26,7 @@ using FreeImageAPI;
 namespace HLTools
 {
     /// <summary>
-    /// GoldSrc WAD Parser 0.8
+    /// GoldSrc WAD Parser 0.8.1
     /// Written by Yuraj.
     /// </summary>
     public class WAD3Loader
@@ -664,11 +664,21 @@ namespace HLTools
 
                     if (isTransparentImage)
                     {
-                        originalImage.SwapColors(new RGBQUAD(Color.Transparent), new RGBQUAD(alphaReplacementColor), false);
+                        if (originalImage.TransparentIndex != -1)
+                        {
+                            originalImage.Palette[originalImage.TransparentIndex] = alphaReplacementColor;
+                        }
+                        else
+                        {
+                            originalImage.SwapColors(new RGBQUAD(Color.FromArgb(0, 0, 0, 0)), new RGBQUAD(alphaReplacementColor), false);
+                        }
                     }
 
                     originalImage.Quantize(FREE_IMAGE_QUANTIZE.FIQ_NNQUANT, MaxPaletteColors - r);
-                    originalImage.ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_08_BPP);
+                    if (!is8Bpp)
+                    {
+                        originalImage.ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_08_BPP);
+                    }
 
                     if (reserveLastClr) {
                         if (isTransparentImage)
@@ -683,6 +693,9 @@ namespace HLTools
                                     originalImage.Palette[pindex] = lastColor;
                                     originalImage.Palette[MaxPaletteColors - 1] = new RGBQUAD(alphaReplacementColor);
                                     originalImage.SwapPaletteIndices((byte)pindex, MaxPaletteColors - 1);
+                                    if (originalImage.TransparentIndex != -1) {
+                                        originalImage.TransparentIndex = MaxPaletteColors - 1;
+                                    }
                                     foundReplacementColor = true;
                                     break;
                                 }

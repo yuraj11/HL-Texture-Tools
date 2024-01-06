@@ -1363,6 +1363,7 @@ namespace HLTextureTools
                 this.selectingTransparent = true;
                 transLbl.Show();
                 lblRgb.Show();
+                pickTransparentLblInfo.Show();
                 pictureBox1.Cursor = Cursors.Cross;
                 pStripButton.Enabled = mStripButton.Enabled = false;
             }
@@ -1384,6 +1385,7 @@ namespace HLTextureTools
                 this.selectingTransparent = false;
                 transLbl.Hide();
                 lblRgb.Hide();
+                pickTransparentLblInfo.Hide();
                 pictureBox1.Cursor = Cursors.Default;
                 pStripButton.Enabled = mStripButton.Enabled = true;
             }

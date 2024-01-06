@@ -59,7 +59,7 @@ namespace HLTools
     }
 
     /// <summary>
-    /// GoldSrc Sprites Parser 0.8
+    /// GoldSrc Sprites Parser 0.8.1
     /// Written by Yuraj.
     /// </summary>
     public class SpriteLoader
@@ -255,7 +255,14 @@ namespace HLTools
 
                 if (image.IsTransparent)
                 {
-                    image.SwapColors(new RGBQUAD(Color.Transparent), new RGBQUAD(alphaReplacementColor), false);
+                    if (image.TransparentIndex != -1)
+                    {
+                        image.Palette[image.TransparentIndex] = alphaReplacementColor;
+                    }
+                    else
+                    {
+                        image.SwapColors(new RGBQUAD(Color.FromArgb(0, 0, 0, 0)), new RGBQUAD(alphaReplacementColor), false);
+                    }
                 }
             }
 
