@@ -1,3 +1,12 @@
+1.6.1
+=======
+_Released 6.1.2024_
+
+- support for high DPI Windows resolution (no more blurry UI on Windows with scaling larger than 100%)
+- small UI improvements related to DPI compatibility
+- fixed WAD transparency replacement issues in "Create new WAD" flow
+- updated to .NET Framework 4.8
+
 1.6
 =======
 _Released 27.9.2020_
