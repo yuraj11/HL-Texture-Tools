@@ -33,8 +33,8 @@
             this.labelVersion = new System.Windows.Forms.Label();
             this.labelCopyright = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
-            this.okButton = new System.Windows.Forms.Button();
             this.homepageLink = new System.Windows.Forms.LinkLabel();
+            this.okButton = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
@@ -84,7 +84,7 @@
             this.labelProductName.AutoSize = true;
             this.labelProductName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelProductName.Location = new System.Drawing.Point(144, 4);
-            this.labelProductName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.labelProductName.Margin = new System.Windows.Forms.Padding(4);
             this.labelProductName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(279, 13);
@@ -97,7 +97,7 @@
             this.labelVersion.AutoSize = true;
             this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelVersion.Location = new System.Drawing.Point(144, 25);
-            this.labelVersion.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.labelVersion.Margin = new System.Windows.Forms.Padding(4);
             this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(279, 13);
@@ -110,7 +110,7 @@
             this.labelCopyright.AutoSize = true;
             this.labelCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCopyright.Location = new System.Drawing.Point(144, 46);
-            this.labelCopyright.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.labelCopyright.Margin = new System.Windows.Forms.Padding(4);
             this.labelCopyright.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(279, 13);
@@ -123,7 +123,7 @@
             this.textBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.textBoxDescription.Location = new System.Drawing.Point(148, 113);
-            this.textBoxDescription.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.textBoxDescription.Margin = new System.Windows.Forms.Padding(8);
             this.textBoxDescription.Multiline = true;
             this.textBoxDescription.Name = "textBoxDescription";
             this.textBoxDescription.ReadOnly = true;
@@ -132,6 +132,19 @@
             this.textBoxDescription.TabIndex = 23;
             this.textBoxDescription.TabStop = false;
             this.textBoxDescription.Text = "Description";
+            // 
+            // homepageLink
+            // 
+            this.homepageLink.AutoSize = true;
+            this.homepageLink.Location = new System.Drawing.Point(144, 67);
+            this.homepageLink.Margin = new System.Windows.Forms.Padding(4);
+            this.homepageLink.Name = "homepageLink";
+            this.homepageLink.Size = new System.Drawing.Size(125, 13);
+            this.homepageLink.TabIndex = 25;
+            this.homepageLink.TabStop = true;
+            this.homepageLink.Text = "https://yuraj11.github.io/";
+            this.homepageLink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.homepageLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.homepageLink_LinkClicked);
             // 
             // okButton
             // 
@@ -144,24 +157,11 @@
             this.okButton.TabIndex = 24;
             this.okButton.Text = "&OK";
             // 
-            // homepageLink
-            // 
-            this.homepageLink.AutoSize = true;
-            this.homepageLink.Location = new System.Drawing.Point(144, 67);
-            this.homepageLink.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.homepageLink.Name = "homepageLink";
-            this.homepageLink.Size = new System.Drawing.Size(114, 13);
-            this.homepageLink.TabIndex = 25;
-            this.homepageLink.TabStop = true;
-            this.homepageLink.Text = "https://yuraj.ucoz.com";
-            this.homepageLink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.homepageLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.homepageLink_LinkClicked);
-            // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(144, 88);
-            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(221, 13);
             this.linkLabel1.TabIndex = 26;
@@ -182,7 +182,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutBox";
-            this.Padding = new System.Windows.Forms.Padding(9, 9, 9, 9);
+            this.Padding = new System.Windows.Forms.Padding(9);
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

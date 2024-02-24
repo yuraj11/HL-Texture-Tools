@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -572,7 +573,12 @@ namespace HLTextureTools
 
         private void extractImageItem_Click(object sender, EventArgs e)
         {
-            //Extract current image
+            object selectedItem = listBox1.SelectedItem;
+            if (selectedItem != null)
+            {
+                char[] invalidCharNames = Path.GetInvalidFileNameChars();
+                saveFileDialog.FileName = new string(selectedItem.ToString().Select(c => invalidCharNames.Contains(c) ? '_' : c).ToArray());
+            }
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 ImageFormat format;
@@ -1144,10 +1150,16 @@ namespace HLTextureTools
         {
             if (errorDraw)
             {
-                float xPos = ((e.ClipRectangle.Width - e.Graphics.MeasureString(errorMessage, errorFont).Width) / 2);
-                float yPos = (e.ClipRectangle.Height / 2) - errorFont.Height;
-                e.Graphics.DrawString(errorMessage, errorFont, Brushes.Black, xPos, yPos);
-                e.Graphics.DrawString(errorMessage, errorFont, Brushes.Red, xPos - 1, yPos - 1);
+                StringFormat sf = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                };
+
+                RectangleF basePos = new RectangleF(0, 0, e.ClipRectangle.Width, e.ClipRectangle.Height);
+                RectangleF secondaryPos = new RectangleF(basePos.X - 1, basePos.Y - 1, basePos.Width, basePos.Height);
+                e.Graphics.DrawString(errorMessage, errorFont, Brushes.Black, basePos, sf);
+                e.Graphics.DrawString(errorMessage, errorFont, Brushes.Red, secondaryPos, sf);
             }
         }
 

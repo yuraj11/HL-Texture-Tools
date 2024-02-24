@@ -101,7 +101,7 @@ namespace HLTextureTools
             try
             {
                 //Open my homepage
-                System.Diagnostics.Process.Start("https://yuraj.ucoz.com");
+                System.Diagnostics.Process.Start("https://yuraj11.github.io/");
             }
             catch { }
         }

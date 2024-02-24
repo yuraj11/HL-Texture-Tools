@@ -973,7 +973,7 @@ namespace HLTextureTools
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(4, 10, 10, 10);
             this.splitContainer1.Size = new System.Drawing.Size(984, 490);
-            this.splitContainer1.SplitterDistance = 539;
+            this.splitContainer1.SplitterDistance = 535;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 6;
             // 
@@ -989,7 +989,7 @@ namespace HLTextureTools
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(10, 10);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(527, 470);
+            this.panel1.Size = new System.Drawing.Size(523, 470);
             this.panel1.TabIndex = 2;
             // 
             // pickTransparentLblInfo
@@ -1008,7 +1008,7 @@ namespace HLTextureTools
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(523, 466);
+            this.pictureBox1.Size = new System.Drawing.Size(519, 466);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
@@ -1030,7 +1030,7 @@ namespace HLTextureTools
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(425, 470);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(429, 470);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // textBox1
@@ -1040,7 +1040,7 @@ namespace HLTextureTools
             this.textBox1.ForeColor = System.Drawing.Color.Silver;
             this.textBox1.Location = new System.Drawing.Point(3, 3);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(419, 20);
+            this.textBox1.Size = new System.Drawing.Size(423, 20);
             this.textBox1.TabIndex = 4;
             this.textBox1.Text = "Search";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
@@ -1055,7 +1055,7 @@ namespace HLTextureTools
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 29);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(419, 438);
+            this.panel2.Size = new System.Drawing.Size(423, 438);
             this.panel2.TabIndex = 5;
             // 
             // listBox1
@@ -1065,7 +1065,7 @@ namespace HLTextureTools
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(419, 438);
+            this.listBox1.Size = new System.Drawing.Size(423, 438);
             this.listBox1.TabIndex = 3;
             this.listBox1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox1_DrawItem);
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
@@ -1081,7 +1081,7 @@ namespace HLTextureTools
             this.listViewEx1.Location = new System.Drawing.Point(0, 0);
             this.listViewEx1.MultiSelect = false;
             this.listViewEx1.Name = "listViewEx1";
-            this.listViewEx1.Size = new System.Drawing.Size(419, 438);
+            this.listViewEx1.Size = new System.Drawing.Size(423, 438);
             this.listViewEx1.TabIndex = 5;
             this.listViewEx1.UseCompatibleStateImageBehavior = false;
             this.listViewEx1.VirtualListSize = 50;

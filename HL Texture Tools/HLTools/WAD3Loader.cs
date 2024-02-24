@@ -1,6 +1,6 @@
 ﻿/*
   HLTools by Yuraj
-  Copyright © 2006-2020 Juraj Novák (Yuraj)
+  Copyright © 2006-2024 Juraj Novák (Yuraj)
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ using FreeImageAPI;
 namespace HLTools
 {
     /// <summary>
-    /// GoldSrc WAD Parser 0.8.1
+    /// GoldSrc WAD Parser 0.8.2
     /// Written by Yuraj.
     /// </summary>
     public class WAD3Loader
@@ -43,6 +43,7 @@ namespace HLTools
         private const int QCharWidth = 16;
         private const int QNumbOfGlyphs = 256;
         private readonly static byte[] WadHeaderId = { 0x57, 0x41, 0x44, 0x33 }; //WAD3
+        private readonly static System.Text.Encoding DefaultEncoding = System.Text.Encoding.ASCII;
 
         private WADHeader header;
         private BinaryReader binReader;
@@ -126,7 +127,7 @@ namespace HLTools
 
             public override string ToString()
             {
-                return System.Text.Encoding.ASCII.GetString(Name);
+                return DefaultEncoding.GetString(Name);
             }
         }
         /*
@@ -155,7 +156,7 @@ namespace HLTools
             Close();
 
             fs = new FileStream(inputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-            binReader = new BinaryReader(fs);
+            binReader = new BinaryReader(fs, DefaultEncoding);
 
             //First try get header ID
             header = new WADHeader
@@ -164,7 +165,7 @@ namespace HLTools
             };
 
             string magic = new string(header.Id);
-            if (magic != System.Text.Encoding.ASCII.GetString(WadHeaderId)) //if invalid WAD file
+            if (magic != DefaultEncoding.GetString(WadHeaderId)) //if invalid WAD file
             {
                 Close();
                 throw new HLToolsUnsupportedFile("Invalid or unsupported WAD File!");
@@ -425,7 +426,7 @@ namespace HLTools
         private static byte[] CreateTextureName(string text)
         {
             byte[] newName = new byte[MaxNameLength];
-            byte[] b = System.Text.Encoding.ASCII.GetBytes(text);
+            byte[] b = DefaultEncoding.GetBytes(text);
             b.CopyTo(newName, 0);
 
             newName[MaxNameLength - 1] = 0;
@@ -558,7 +559,7 @@ namespace HLTools
                                     includedTextures[includedTextures.Count - 1] = new IncludedBSPTexture(offset, (uint)(textureOffsetAbsolute - offset), name);
                                 }
 
-                                string nameNulled = System.Text.Encoding.ASCII.GetString(buffer, (int)textureOffset, 16);
+                                string nameNulled = DefaultEncoding.GetString(buffer, (int)textureOffset, 16);
                                 string normal = nameNulled.Substring(0, nameNulled.IndexOf('\0'));
 
                                 includedTextures.Add(new IncludedBSPTexture((uint)textureOffsetAbsolute, 0, CreateTextureName(normal)));
@@ -594,7 +595,7 @@ namespace HLTools
             //Lets extract textures to single wad
             using (FileStream fs2 = new FileStream(inputBspFilename, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (FileStream fsOut = new FileStream(outputWadFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-            using (BinaryWriter fsWad = new BinaryWriter(fsOut))
+            using (BinaryWriter fsWad = new BinaryWriter(fsOut, DefaultEncoding))
             {
                 fsWad.Write(WadHeaderId, 0, WadHeaderId.Length);
                 fsWad.Write(includedTextures.Count);
@@ -647,7 +648,7 @@ namespace HLTools
         public static void CreateWad(string outputFilename, string[] images, string[] names, Color alphaReplacementColor, bool reserverLastPalColor = false)
         {
             using (FileStream fs = new FileStream(outputFilename, FileMode.Create))
-            using (BinaryWriter bw = new BinaryWriter(fs))
+            using (BinaryWriter bw = new BinaryWriter(fs, DefaultEncoding))
             {
                 //Convert bitmaps to 8bpp format
                 List<FreeImageBitmap> imgs = new List<FreeImageBitmap>();

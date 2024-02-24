@@ -1,6 +1,6 @@
 ﻿/*
   HLTools by Yuraj
-  Copyright © 2006-2020 Juraj Novák (Yuraj)
+  Copyright © 2006-2024 Juraj Novák (Yuraj)
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ namespace HLTools
     }
 
     /// <summary>
-    /// GoldSrc Sprites Parser 0.8.1
+    /// GoldSrc Sprites Parser 0.8.2
     /// Written by Yuraj.
     /// </summary>
     public class SpriteLoader
@@ -96,6 +96,7 @@ namespace HLTools
 
         private const string SpriteHeaderId = "IDSP";
         private const int MaxPaletteColors = 256;
+        private readonly static System.Text.Encoding DefaultEncoding = System.Text.Encoding.ASCII;
 
         private BinaryReader binReader;
         private FileStream fs;
@@ -117,7 +118,7 @@ namespace HLTools
             Close();
 
             fs = new FileStream(inputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-            binReader = new BinaryReader(fs);
+            binReader = new BinaryReader(fs, DefaultEncoding);
 
             //First try get header ID
             SprHeader spriteHeader = new SprHeader();
@@ -269,7 +270,7 @@ namespace HLTools
             //Calc. bounding box
             float f = (float)Math.Sqrt((maxW >> 1) * (maxW >> 1) + (maxH >> 1) * (maxH >> 1));
 
-            using (BinaryWriter bw = new BinaryWriter(new FileStream(outputPath, FileMode.Create)))
+            using (BinaryWriter bw = new BinaryWriter(new FileStream(outputPath, FileMode.Create), DefaultEncoding))
             {
                 //Write header first
                 bw.Write(SpriteHeaderId.ToCharArray());
