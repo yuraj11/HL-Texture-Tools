@@ -1,3 +1,11 @@
+1.6.2
+=======
+_Released 24.2.2024_
+
+- fix issue when opening some specific WADs (encoding issue)
+- use texture/frame name as default filename in Extract dialog
+- 
+
 1.6.1
 =======
 _Released 6.1.2024_
