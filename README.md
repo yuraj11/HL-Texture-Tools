@@ -9,7 +9,7 @@ You will need .NET Framework 4.8+ to run this application.
 
 *This software uses the FreeImage open source image library. See http://freeimage.sourceforge.net for details.*
 
-Current version: **1.6.2** ([changelog](CHANGELOG.md))
+Current version: **1.6.5** ([changelog](CHANGELOG.md))
 
 #### Download latest Windows version (binary) [here](https://github.com/yuraj11/HL-Texture-Tools/releases).
 
