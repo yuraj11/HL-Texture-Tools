@@ -54,11 +54,6 @@ namespace HLTools
         private long lastImageSize = 0;
         private uint lastImageWidth = 0;
 
-        public enum TextureEffects
-        {
-            None, Grayscale, Invert
-        }
-
         /// <summary>
         /// WAD header.
         /// </summary>

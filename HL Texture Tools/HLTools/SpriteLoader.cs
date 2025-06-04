@@ -22,6 +22,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using FreeImageAPI;
 
 namespace HLTools
@@ -59,7 +61,7 @@ namespace HLTools
     }
 
     /// <summary>
-    /// GoldSrc Sprites Parser 0.8.2
+    /// GoldSrc Sprites Parser 0.8.5
     /// Written by Yuraj.
     /// </summary>
     public class SpriteLoader
@@ -96,7 +98,7 @@ namespace HLTools
 
         private const string SpriteHeaderId = "IDSP";
         private const int MaxPaletteColors = 256;
-        private readonly static System.Text.Encoding DefaultEncoding = System.Text.Encoding.ASCII;
+        private static readonly Encoding DefaultEncoding = Encoding.ASCII;
 
         private BinaryReader binReader;
         private FileStream fs;
@@ -120,7 +122,7 @@ namespace HLTools
             fs = new FileStream(inputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
             binReader = new BinaryReader(fs, DefaultEncoding);
 
-            //First try get header ID
+            //First try to get header ID
             SprHeader spriteHeader = new SprHeader();
             spriteHeader.Id = binReader.ReadChars(4);
 
@@ -146,22 +148,14 @@ namespace HLTools
             ushort u = binReader.ReadUInt16();
 
             //Prepare new palette for bitmap
-            ColorPalette pal = null;
-            using (Bitmap tmpBitmap = new Bitmap(1, 1, PixelFormat.Format8bppIndexed))
+            ColorPalette pal;
+            using (var tmpBitmap = new Bitmap(1, 1, PixelFormat.Format8bppIndexed))
             {
                 pal = tmpBitmap.Palette;
                 byte[] palBytes = binReader.ReadBytes(u * 3);
                 for (int i = 0, j = 0; i < u; i++)
                 {
                     //Load (R,G,B) from file
-                    /*if (transparent && SpriteHeader.TextFormat == SprTextFormat.SPR_ADDITIVE)
-                    {
-                        //pal.Entries[i] = Color.FromArgb((u - 1) - i, palBytes[j], palBytes[j + 1], palBytes[j + 2]);
-                    }
-                    else
-                    {
-                        //pal.Entries[i] = Color.FromArgb(palBytes[j], palBytes[j + 1], palBytes[j + 2]);
-                    }*/
                     pal.Entries[i] = Color.FromArgb(palBytes[j], palBytes[j + 1], palBytes[j + 2]);
 
                     //Check for transparent color
@@ -171,7 +165,6 @@ namespace HLTools
                         {
                             pal.Entries[i] = Color.FromArgb(0, pal.Entries[i]);
                         }
-
                     }
 
                     j += 3;
@@ -206,8 +199,9 @@ namespace HLTools
                 byte[] pixels = binReader.ReadBytes((int)pixelSize);
 
                 //Lock bitmap for pixel manipulation
-                BitmapData bmd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
-                System.Runtime.InteropServices.Marshal.Copy(pixels, 0, bmd.Scan0, pixels.Length);
+                BitmapData bmd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, 
+                    PixelFormat.Format8bppIndexed);
+                Marshal.Copy(pixels, 0, bmd.Scan0, pixels.Length);
                 bmp.UnlockBits(bmd);
 
                 //Insert new frame to frames list
@@ -223,11 +217,6 @@ namespace HLTools
             return frames.ToArray();
         }
 
-        public static void CreateSpriteFile(string outputPath, string[] files, SprType spriteType, SprTextFormat textFormat, int palIndex)
-        {
-            CreateSpriteFile(outputPath, files, spriteType, textFormat, palIndex, Color.Blue);
-        }
-
         /// <summary>
         /// Create new sprite file from image files.
         /// </summary>
@@ -236,17 +225,19 @@ namespace HLTools
         /// <param name="spriteType">SprType</param>
         /// <param name="textFormat">SprTextFormat</param>
         /// <param name="palIndex">Which palette use from files</param>
-        public static void CreateSpriteFile(string outputPath, string[] files, SprType spriteType, SprTextFormat textFormat, int palIndex, Color alphaReplacementColor)
+        /// <param name="alphaReplacementColor">Which color to use as replacement for alpha</param>
+        /// <param name="quantizePalette">Use quantized palette of all frames.</param>
+        public static void CreateSpriteFile(string outputPath, string[] files, SprType spriteType,
+            SprTextFormat textFormat, int palIndex, Color alphaReplacementColor, bool quantizePalette)
         {
-            List<FreeImageBitmap> images = files.Select(file => new FreeImageBitmap(file)).ToList();
+            var images = files.Select(file => new FreeImageBitmap(file)).ToList();
 
             //Retrieve maximum width, height
             int prevSize = 0;
             int maxW = 0, maxH = 0;
 
-            for (int i = 0; i < images.Count; i++)
+            foreach (var image in images)
             {
-                FreeImageBitmap image = images[i];
                 if ((image.Height + image.Width) > prevSize)
                 {
                     prevSize = image.Height + image.Width;
@@ -262,15 +253,22 @@ namespace HLTools
                     }
                     else
                     {
-                        image.SwapColors(new RGBQUAD(Color.FromArgb(0, 0, 0, 0)), new RGBQUAD(alphaReplacementColor), false);
+                        image.SwapColors(new RGBQUAD(Color.FromArgb(0, 0, 0, 0)), new RGBQUAD(alphaReplacementColor),
+                            false);
                     }
+                }
+
+                // Convert to 8BPP image if needed
+                if (!image.HasPalette || image.Palette.Length != MaxPaletteColors)
+                {
+                    image.ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_08_BPP);
                 }
             }
 
             //Calc. bounding box
             float f = (float)Math.Sqrt((maxW >> 1) * (maxW >> 1) + (maxH >> 1) * (maxH >> 1));
 
-            using (BinaryWriter bw = new BinaryWriter(new FileStream(outputPath, FileMode.Create), DefaultEncoding))
+            using (var bw = new BinaryWriter(new FileStream(outputPath, FileMode.Create), DefaultEncoding))
             {
                 //Write header first
                 bw.Write(SpriteHeaderId.ToCharArray());
@@ -282,43 +280,89 @@ namespace HLTools
                 bw.Write(maxH);
                 bw.Write(images.Count);
                 bw.Write(0.0f); //Always 0 ?
-                bw.Write(1); //Synch. type
-                //Color palette
-                bw.Write((ushort)MaxPaletteColors); //Always 256 ?
+                bw.Write(1); //Synchronization type
+                bw.Write((ushort)MaxPaletteColors); // Color palette (always 256)
 
-                if ((palIndex > (images.Count - 1)) || palIndex < images.Count)
+                Palette palette;
+
+                if (quantizePalette)
                 {
-                    palIndex = 0;
+                    // Create big image with all frames
+                    // (could be optimized without creating a separate image)
+
+                    int width = images.Sum(img => img.Width);
+                    int height = images.Max(img => img.Height);
+
+                    using (var canvas = new Bitmap(width, height))
+                    using (var graphics = Graphics.FromImage(canvas))
+                    {
+                        int totalImageWidth = 0;
+
+                        foreach (var image in images)
+                        {
+                            graphics.DrawImage(image.ToBitmap(), totalImageWidth, 0);
+                            totalImageWidth += image.Width;
+                        }
+
+                        using (var allImages = new FreeImageBitmap(canvas))
+                        {
+                            allImages.ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_08_BPP);
+                            palette = new Palette(allImages.Palette.AsArray);
+                        }
+                    }
+                }
+                else
+                {
+                    palIndex = Math.Max(0, Math.Min(palIndex, images.Count - 1));
+                    palette = images[palIndex].Palette;
                 }
 
-                if (!images[palIndex].HasPalette || images[palIndex].Palette.Length != 256)
+                // Swap last color for a transparent one
+                if (quantizePalette && textFormat == SprTextFormat.SPR_ALPHTEST)
                 {
-                    images[palIndex].ConvertColorDepth(FREE_IMAGE_COLOR_DEPTH.FICD_08_BPP);
+                    var transparentIndex = palette.AsArray.ToList().FindIndex(rgb =>
+                        rgb.rgbRed == alphaReplacementColor.R && rgb.rgbGreen == alphaReplacementColor.G &&
+                        rgb.rgbBlue == alphaReplacementColor.B);
+
+                    if (transparentIndex != -1)
+                    {
+                        var tempColor = palette[MaxPaletteColors - 1];
+                        palette[MaxPaletteColors - 1] = new RGBQUAD(alphaReplacementColor);
+                        palette[transparentIndex] = tempColor;                        
+                    }
                 }
 
-                Palette pal = images[palIndex].Palette;
-
-                for (int i = 0; i < 256; i++)
+                for (int i = 0; i < MaxPaletteColors; i++)
                 {
-                    bw.Write(pal[i].rgbRed);
-                    bw.Write(pal[i].rgbGreen);
-                    bw.Write(pal[i].rgbBlue);
+                    bw.Write(palette[i].rgbRed);
+                    bw.Write(palette[i].rgbGreen);
+                    bw.Write(palette[i].rgbBlue);
                 }
 
                 //Write images
-                for (int i = 0; i < images.Count; i++)
+                foreach (var image in images)
                 {
                     bw.Write(0); //group
-                    bw.Write(-(images[i].Width / 2)); //origin x
-                    bw.Write(images[i].Height / 2); //origin y
-                    bw.Write(images[i].Width); //w
-                    bw.Write(images[i].Height); //h
+                    bw.Write(-(image.Width / 2)); //origin x
+                    bw.Write(image.Height / 2); //origin y
+                    bw.Write(image.Width); //w
+                    bw.Write(image.Height); //h
 
-                    byte[] arr = new byte[images[i].Width * images[i].Height];
-                    images[i].RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    System.Runtime.InteropServices.Marshal.Copy(images[i].GetScanlinePointer(0), arr, 0, arr.Length);
-                    Array.Reverse(arr);
-                    bw.Write(arr);
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+
+                    byte[] imagePixels;
+                    if (quantizePalette)
+                    {
+                        imagePixels = RemapImageToPalette(image, palette);
+                    }
+                    else
+                    {
+                        imagePixels = new byte[image.Width * image.Height];
+                        Marshal.Copy(image.GetScanlinePointer(0), imagePixels, 0, imagePixels.Length);
+                    }
+
+                    Array.Reverse(imagePixels);
+                    bw.Write(imagePixels);
                 }
             }
 
@@ -326,30 +370,78 @@ namespace HLTools
             images.ForEach(image => image.Dispose());
         }
 
+        private static int FindClosestPaletteIndex(Color color, Palette palette, Dictionary<int, int> colorCache)
+        {
+            int colorKey = (color.R << 16) | (color.G << 8) | color.B;
+
+            if (colorCache.TryGetValue(colorKey, out var cached))
+            {
+                return cached;
+            }
+
+            int bestIndex = 0;
+            int bestDistance = int.MaxValue;
+
+            for (int i = 0; i < palette.Length; i++)
+            {
+                int dr = palette[i].rgbRed - color.R;
+                int dg = palette[i].rgbGreen - color.G;
+                int db = palette[i].rgbBlue - color.B;
+
+                int dist = dr * dr + dg * dg + db * db;
+                if (dist < bestDistance)
+                {
+                    bestDistance = dist;
+                    bestIndex = i;
+                }
+            }
+
+            colorCache[colorKey] = bestIndex;
+            return bestIndex;
+        }
+
+        private static byte[] RemapImageToPalette(FreeImageBitmap source, Palette sharedPalette)
+        {
+            int width = source.Width;
+            int height = source.Height;
+            byte[] remapped = new byte[width * height];
+
+            // Allocate buffer to hold raw scanline
+            byte[] scanlineBuffer = new byte[width];
+            Palette palette = source.Palette;
+            Dictionary<int, int> colorCache = new  Dictionary<int, int>();
+
+            for (int y = 0; y < height; y++)
+            {
+                // Copy scanline into buffer
+                IntPtr scanlinePtr = source.GetScanlinePointer(y);
+                Marshal.Copy(scanlinePtr, scanlineBuffer, 0, scanlineBuffer.Length);
+
+                for (int x = 0; x < width; x++)
+                {
+                    int pixelOffset = x;
+
+                    int index = FindClosestPaletteIndex(palette[scanlineBuffer[pixelOffset]], sharedPalette, colorCache);
+                    remapped[y * width + x] = (byte)index;
+                }
+            }
+
+            return remapped;
+        }
 
         /// <summary>
         /// Close file.
         /// </summary>
         public void Close()
         {
-            //Close binaryreader
-            if (binReader != null)
-            {
-                binReader.Close();
-            }
-
-            //Close filestream
-            if (fs != null)
-            {
-                fs.Close();
-            }
+            binReader?.Close();
+            fs?.Close();
         }
 
 
         /// <summary>
         /// Only change sprite type. This method doesn't check header.
         /// </summary>
-        /// <param name="inputFile">Sprite file.</param>
         /// <param name="newType">New sprite type.</param>
         public void FixSpriteType(SprType newType)
         {
@@ -369,7 +461,8 @@ namespace HLTools
         /// <summary>
         /// Change color palette of sprite.
         /// </summary>
-        /// <param name="newPalette"></param>
+        /// <param name="newPalette">Replacement palette.</param>
+        /// <param name="outputFileName">Output file name.</param>
         public void ChangeColorPalette(ColorPalette newPalette, string outputFileName = null)
         {
             //Check if valid palette
@@ -380,37 +473,29 @@ namespace HLTools
             {
                 fs.Seek(0x2A, SeekOrigin.Begin); //Skip first
 
-                for (int i = 0; i < newPalette.Entries.Length; i++)
+                foreach (var entry in newPalette.Entries)
                 {
-                    fs.WriteByte(newPalette.Entries[i].R);
-                    fs.WriteByte(newPalette.Entries[i].G);
-                    fs.WriteByte(newPalette.Entries[i].B);
+                    fs.WriteByte(entry.R);
+                    fs.WriteByte(entry.G);
+                    fs.WriteByte(entry.B);
                 }
+
                 fs.Flush();
             }
             else
             {
                 //Save to other file than original
-                try
+                File.Copy(Filename, outputFileName);
+                using (var sw = new FileStream(outputFileName, FileMode.Open, FileAccess.ReadWrite))
                 {
-                    File.Copy(Filename, outputFileName);
-                    using (FileStream sw = new FileStream(outputFileName, FileMode.Open, FileAccess.ReadWrite))
+                    sw.Seek(0x2A, SeekOrigin.Begin); //Skip first
+
+                    foreach (var entry in newPalette.Entries)
                     {
-                        sw.Seek(0x2A, SeekOrigin.Begin); //Skip first
-
-                        for (int i = 0; i < newPalette.Entries.Length; i++)
-                        {
-                            sw.WriteByte(newPalette.Entries[i].R);
-                            sw.WriteByte(newPalette.Entries[i].G);
-                            sw.WriteByte(newPalette.Entries[i].B);
-                        }
+                        sw.WriteByte(entry.R);
+                        sw.WriteByte(entry.G);
+                        sw.WriteByte(entry.B);
                     }
-
-
-                }
-                catch
-                {
-                    throw;
                 }
             }
         }
@@ -440,7 +525,6 @@ namespace HLTools
                 {
                     if (binReader.ReadByte() == source)
                     {
-
                         fs.Seek(binReader.BaseStream.Position - 1, SeekOrigin.Begin);
                         fs.WriteByte(destination);
                     }

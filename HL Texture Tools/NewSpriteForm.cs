@@ -145,10 +145,12 @@ namespace HLTextureTools
                     SprType spriteType = GetSelectedSpriteType();
                     SprTextFormat spriteFormat = GetSelectedSpriteFormat();
                     int paletteIndex = (int)inputPaletteIndex.Value - 1;
+                    Color transparentColorReplacement = panelPickTransparentColor.BackColor;
+                    bool quantizePaletteChecked = quantizePalette.Checked;
 
                     Thread thCreator = new Thread((o) =>
                     {
-                        SpriteLoader.CreateSpriteFile(savePath, filenames, spriteType, spriteFormat, paletteIndex);
+                        SpriteLoader.CreateSpriteFile(savePath, filenames, spriteType, spriteFormat, paletteIndex, transparentColorReplacement, quantizePaletteChecked);
                     });
                     thCreator.Start();
 
@@ -285,6 +287,11 @@ namespace HLTextureTools
             {
                 panelPickTransparentColor.BackColor = colorPicker.Color;
             }
+        }
+
+        private void quantizePalette_CheckedChanged(object sender, EventArgs e)
+        {
+            inputPaletteIndex.Enabled = !quantizePalette.Checked;
         }
     }
 }
