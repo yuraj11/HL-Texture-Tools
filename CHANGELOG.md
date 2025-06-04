@@ -1,10 +1,18 @@
+1.6.5
+=======
+_Released 4.6.2025_
+
+- fix sprite creation when not using a custom palette
+- added "color palette quantization" in Sprite creation flow which will automatically generate color palette from all images in sprite
+- fixed sprite color replacement and custom color palette index issues
+- put transparent replacement color as last when using AlphaTest type in Sprite creation flow
+
 1.6.2
 =======
 _Released 24.2.2024_
 
 - fix issue when opening some specific WADs (encoding issue)
 - use texture/frame name as default filename in Extract dialog
-- 
 
 1.6.1
 =======
